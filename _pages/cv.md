@@ -29,7 +29,7 @@ Skills
 ======
 * Programming Language: Mathematica > Julia > Python
 * Black Hole Perturbation Theory
-  * Regge-Wheeler-Zerrili formalism, Teukolsky formalism, Sasaki-Nakamura formalism
+  * Regge-Wheeler-Zerilli formalism, Teukolsky formalism, Sasaki-Nakamura formalism
   * EMRI waveform modeling: Gravitational Self-force, Adiabatic approximation
   * Quasi-normal modes and their calculation
 * Numerical methods to solve ODEs
