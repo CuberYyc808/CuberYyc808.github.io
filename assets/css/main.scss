@@ -7,6 +7,11 @@
  * Note that the files are processed in the order they are imported, so they are partly
    sorted by the dependencies. Also, the first two lines of the file are required by Jekyll.
  */
+// 居中导航栏项目
+.nav__list {
+  display: flex;
+  justify-content: center;
+}
 
 @import
     "vendor/breakpoint/breakpoint",
