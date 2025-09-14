@@ -11,6 +11,6 @@ I am now a visitor of the [Strong Group](https://strong-gr.com) at Neils Bohr In
 
 My research is mainly about black hole perturbation theory and its various applications, including waveform modeling of different gravitational wave events (e.g. BBH, EMRI, b-EMRI), quasi-normal modes of black holes, and scattering of gravitational wave by black holes.
 
-You can find my bachelor's thesis (in Chinese) here: [Gravitational radiation of b-EMRI systems](../Bachelor_Thesis_YuchengYin.pdf)
+You can find my bachelor's thesis (in Chinese) here: [Gravitational radiation of b-EMRI systems](../file/Bachelor_Thesis_YuchengYin.pdf)
 
-Contact: [Email](mailto:cuber.ycyin@gmail.com) / [Wechat](../images/wechat.jpg)
+Contact: [Email](mailto:cuber.ycyin@gmail.com) / [Wechat](../file/wechat.jpg)
