@@ -7,7 +7,7 @@ author_profile: true
 
 ## Numerical Computation
 
-# Relativistic dynamics
+### Relativistic dynamics
 
 - [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl) is a Julia package based on `EllipticFunctions` to compute timelike geodesic motions around a Kerr black hole.
 
