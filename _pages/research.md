@@ -7,7 +7,7 @@ author_profile: true
 
 ## Binary extreme-mass-ratio inspiral (b-EMRI)
 
-<img src="../images/b-EMRI.png" alt="b-EMRI" width="300"/>
+<img src="../images/b-EMRI.png" alt="b-EMRI" width="800"/>
 
 B-EMRIs are hierarchical triple systems consisting of a supermassive bleck hole (SMBH) and two staller mass black holes.
 
