@@ -25,8 +25,8 @@ Research experience
   * Project: Waveform modeling of binary extreme-mass ratio inspirals
   * Supervisor: Prof. [Xian Chen](https://kiaa.pku.edu.cn/info/1010/2663.htm)
  
-* 09/2025 - 03/2026: Visiting Fellow (Intern)
-  * Niels Bohr Institute, University of Copenhagen
+* 10/2025 - 04/2026: Guest Researcher
+  * Center of gravity, Niels Bohr Institute, University of Copenhagen
   * Project: Inhomogeneous generalized Sasaki-Nakamura formalism
   * Supervisor: Dr. [Rico Lo](https://ricokaloklo.github.io)
   
