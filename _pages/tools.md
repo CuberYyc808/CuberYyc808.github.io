@@ -1,5 +1,6 @@
 ---
 layout: archive
+title: ""
 permalink: /tools/
 author_profile: true
 ---
