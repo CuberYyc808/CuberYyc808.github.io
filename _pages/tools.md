@@ -4,7 +4,6 @@ permalink: /tools/
 author_profile: true
 ---
 
-## Numerical Computation
 
 ### Highly oscillatory integrals
 
