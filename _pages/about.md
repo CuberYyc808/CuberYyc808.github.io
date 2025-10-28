@@ -13,4 +13,4 @@ My research is mainly about black hole perturbation theory and its various appli
 
 Currently, I'm seeking for a PhD or Master's position in physics for the 2026 Fall enrollment. Feel free to contact!
 
-Contact: [Email](mailto:cuber.ycyin@gmail.com) / [Wechat](../files/wechat.jpg)
+Contact: [Email](mailto:yucheng.yin@nbi.ku.dk) / [Wechat](../files/wechat.jpg)
