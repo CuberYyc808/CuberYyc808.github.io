@@ -22,14 +22,14 @@ repository               : "CuberYyc808/CuberYyc808.github.io"
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar           : "profile.png"
+  avatar           : "profile2.png"
   name             : "Yucheng Yin"
   pronouns         : # example: "she/her"  
   bio              : "Guest Researcher"
   location         : "Copenhagen, Denmark"
   employer         : "Niels Bohr Institute"
   uri              : # URL
-  email            : "cuber.ycyin@gmail.com" 
+  email            : "yucheng.yin@nbi.ku.dk" 
 
   # Academic websites
   academia         : # URL
