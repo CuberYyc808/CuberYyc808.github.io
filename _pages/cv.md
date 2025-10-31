@@ -29,7 +29,7 @@ Research experience
 * 10/2025 - 04/2026: Visiting Fellow
   * Center of gravity, Niels Bohr Institute, University of Copenhagen
   * Project: Inhomogeneous generalized Sasaki-Nakamura formalism
-  * Supervisor: Dr. [Rico Lo](https://ricokaloklo.github.io)
+  * Supervisor: Dr. [Rico K. L. Lo](https://ricokaloklo.github.io)
   
 Skills
 ======
