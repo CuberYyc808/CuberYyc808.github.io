@@ -3,6 +3,8 @@ layout: archive
 title: ""
 permalink: /research/
 author_profile: true
+sidebar:
+  nav: "research-nav" 
 ---
 
 ## Binary extreme-mass-ratio inspiral (b-EMRI)
