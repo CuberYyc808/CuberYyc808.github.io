@@ -11,6 +11,25 @@ layout: compress
     {% include head/custom.html %}
     <meta name="description" content="Yucheng Yin's research homepage: focusing on black hole perturbation theory, gravitational wave waveform modeling, quasi-normal modes. Visiting Student at Niels Bohr Institute.">
     <meta name="keywords" content="Yucheng Yin, CuberYyc808, Black Hole Physics, Gravitational Waves, Niels Bohr Institute, Black Hole Perturbation Theory">
+    <meta property="og:locale" content="en-US">
+    <meta property="og:site_name" content="Yucheng Yin's Homepage">
+    <meta property="og:title" content="Yucheng Yin | Black Hole Physics Research">
+    <meta property="og:description" content="Yucheng Yin's research homepage: focusing on black hole perturbation theory, gravitational wave waveform modeling, quasi-normal modes.">
+    <!-- Keep necessary site verification tags (auto-inactive if not configured) -->
+    {% if site.google_site_verification %}
+      <meta name="google-site-verification" content="{{ site.google_site_verification }}" />
+    {% endif %}
+    {% if site.bing_site_verification %}
+      <meta name="msvalidate.01" content="{{ site.bing_site_verification }}">
+    {% endif %}
+
+    <!-- Keep pagination links (essential theme function, no impact on SEO) -->
+    {% if paginator.previous_page %}
+      <link rel="prev" href="{{ paginator.previous_page_path | prepend: seo_url }}">
+    {% endif %}
+    {% if paginator.next_page %}
+      <link rel="next" href="{{ paginator.next_page_path | prepend: seo_url }}">
+    {% endif %}
   </head>
 
   <body>
