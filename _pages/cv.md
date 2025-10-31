@@ -17,7 +17,7 @@ Research experience
 ======
 
 * 02/2023 - 06/2025: Undergraduate Researcher
-  * [Kavli Institute for Astronomy and Astrophysics](https://kiaa.pku.edu.cn), Peking University
+  * Kavli Institute for Astronomy and Astrophysics, Peking University
   * Project: Waveform modeling of binary extreme-mass ratio inspirals
   * Supervisor: Prof. [Xian Chen](https://kiaa.pku.edu.cn/info/1010/2663.htm)
   
