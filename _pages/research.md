@@ -25,4 +25,4 @@ See [Phys. Rev. D 111. 103007](https://journals.aps.org/prd/abstract/10.1103/Phy
 
 ## High performance waveform generation based on Sasaki-Nakamura formalism
 
-To be continued...
+
