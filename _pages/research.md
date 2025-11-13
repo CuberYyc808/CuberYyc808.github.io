@@ -27,8 +27,9 @@ See [Phys. Rev. D 111. 103007](https://journals.aps.org/prd/abstract/10.1103/Phy
 
 <img src="../images/waveform_bound.pdf" alt="EMRI-bound" width="600"/>
 
-
 - Benefiting from the short-range nature of the Sasaki–Nakamura (SN) formalism, we can use it to compute gravitational-wave waveforms from point particles on both bound and unbound orbits.
 - The difficulties in solving the inhomogeneous SN source term and evaluating the Green’s function integral can be avoided by applying the integration-by-parts (IBP) technique.
 - The current implementation supports only the spin s=−2 case, i.e., waveforms and fluxes at infinity.
 - Work is ongoing to extend the formalism to the s=2 case, enabling the calculation of waveforms and fluxes at the black hole horizon.
+
+See [arXiv:2511.08673](https://arxiv.org/abs/2511.08673) for details.
