@@ -21,4 +21,4 @@ Black hole perturbation theory
 
 <img src="../files/Trajectory_generic.gif" alt="Trajectory_generic" width="700"/>
 
-- [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) is a Julia package to solve the linear metric perturbation in Kerr spacetime. I contribute to the `Inhomogeneous` sector of the codes. The founder of the codes is [Rico](https://ricokaloklo.github.io)
+- [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) is a Julia package to solve the linear metric perturbation equations in Kerr spacetime. I contribute to the `Inhomogeneous` sector of the codes. The founder of the codes is [Rico Lo](https://ricokaloklo.github.io)
