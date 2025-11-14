@@ -34,7 +34,7 @@ Research experience
 Professional Membership
 ======
 
-* 2025 - Present: LISA consortium, waveform working group core member
+* 2025 - Present: [LISA](https://www.lisamission.org) (Laser Interferometer Space Antenna) consortium, waveform working group core member
 
 Skills
 ======
