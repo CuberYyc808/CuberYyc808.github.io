@@ -30,7 +30,12 @@ Research experience
   * Center of gravity, Niels Bohr Institute, University of Copenhagen
   * Project: Inhomogeneous generalized Sasaki-Nakamura formalism
   * Supervisor: Dr. [Rico K. L. Lo](https://ricokaloklo.github.io)
-  
+
+Professional Membership
+======
+
+* 2025 - Present: LISA consortium, waveform working group core member
+
 Skills
 ======
 * Programming Language: Mathematica > Julia > Python
