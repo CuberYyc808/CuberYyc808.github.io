@@ -8,9 +8,9 @@ author_profile: true
 Journal Articles
 ======
 
-- **Yucheng Yin**, Josh Mathews, Alvin, J. K. Chua, and Xian Chen, [Relativistic model of binary extreme-mass-ratio inspiral systems and their gravitational radiation](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.111.103007) *Phys. Rev. D 111 (2025) 103007*
-- **Yucheng Yin**, Rico K. L. Lo, Xian Chen, [Gravitational radiation from Kerr black holes using the Sasaki-Nakamura formalism:
-waveforms and fluxes at infinity](https://arxiv.org/abs/2511.08673) *arXiv:2511.08673*
+- **Yucheng Yin**, Josh Mathews, Alvin, J. K. Chua, and Xian Chen, "Relativistic model of binary extreme-mass-ratio inspiral systems and their gravitational radiation" [*Phys. Rev. D 111 (2025) 103007*](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.111.103007)
+- **Yucheng Yin**, Rico K. L. Lo, Xian Chen, "Gravitational radiation from Kerr black holes using the Sasaki-Nakamura formalism:
+waveforms and fluxes at infinity" [*arXiv:2511.08673*](https://arxiv.org/abs/2511.08673)
 
 
 Theses
