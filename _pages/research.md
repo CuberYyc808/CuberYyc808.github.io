@@ -14,7 +14,7 @@ sidebar:
 
 - Benefiting from the short-range nature of the Sasaki–Nakamura (SN) formalism, we can use it to compute gravitational-wave waveforms from point particles on both bound and unbound orbits.
 - The difficulties in solving the inhomogeneous SN source term and evaluating the Green’s function integral can be avoided by applying the integration-by-parts (IBP) technique.
-- See [$\texttt{GeneralizedSasakiNakamura.jl$](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
+- See [$\texttt{GeneralizedSasakiNakamura.jl}$](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
 
 See [arXiv:2511.08673](https://arxiv.org/abs/2511.08673) for details.
 
