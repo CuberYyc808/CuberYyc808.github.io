@@ -10,7 +10,7 @@ Black hole perturbation theory
 
 ### EMRI waveforms
 
-- [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) is a Julia package to solve the linear metric perturbation equations in Kerr spacetime. I contribute to the `Inhomogeneous` section of the codes. The founder of the codes is [Rico Lo](https://ricokaloklo.github.io)
+- [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) is a Julia package to solve the linear metric perturbation equations in Kerr spacetime. I developed the `Inhomogeneous` section of the code. The founder of the code is [Rico Lo](https://ricokaloklo.github.io)
 
 ### Relativistic dynamics
 
