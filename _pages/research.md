@@ -12,6 +12,14 @@ sidebar:
 
 <img src="../images/Waveform_horizon.pdf" alt="shear_perturbation_horizon" width="600"/>
 
+- We derive a convergent source term for linear gravitational perturbation associate with the spin $s=+2$ perturbation (or $\psi_0$)
+
+- We validate the derivation by calculating the shear perturbation $\sigma(r\to r_+)$ and the fluxes of a generic EMRI. Both of results agree with previous calculation in Teukolsky formalsim very well.
+
+- See [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
+
+See [arXiv:2512.07937](https://arxiv.org/abs/2512.07937) for details.
+
 ## High performance EMRI waveform generation based on Sasaki-Nakamura formalism
 
 <img src="../images/waveform_bound.pdf" alt="EMRI-bound" width="600"/>
