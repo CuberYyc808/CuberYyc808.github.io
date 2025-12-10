@@ -10,7 +10,7 @@ sidebar:
 
 ## Near-horizon perturbation of Kerr black holes
 
-<img src="../images/Waveform_horizon.pdf" alt="EMRI-bound" width="600"/>
+<img src="../images/Waveform_horizon.pdf" alt="shear_perturbation_horizon" width="600"/>
 
 ## High performance EMRI waveform generation based on Sasaki-Nakamura formalism
 
