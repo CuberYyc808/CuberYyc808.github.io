@@ -7,7 +7,19 @@ sidebar:
   nav: "research-nav" 
 ---
 
-## Binary extreme-mass-ratio inspiral (b-EMRI)
+
+## High performance EMRI waveform generation based on Sasaki-Nakamura formalism
+
+<img src="../images/waveform_bound.pdf" alt="EMRI-bound" width="600"/>
+
+- Benefiting from the short-range nature of the Sasaki–Nakamura (SN) formalism, we can use it to compute gravitational-wave waveforms from point particles on both bound and unbound orbits.
+- The difficulties in solving the inhomogeneous SN source term and evaluating the Green’s function integral can be avoided by applying the integration-by-parts (IBP) technique.
+- See [$\texttt{GeneralizedSasakiNakamura.jl$](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
+
+See [arXiv:2511.08673](https://arxiv.org/abs/2511.08673) for details.
+
+
+## Binary extreme-mass-ratio inspiral (b-EMRI) waveform modeling
 
 <img src="../images/b-EMRI.png" alt="b-EMRI" width="600"/>
 
@@ -22,14 +34,3 @@ sidebar:
 See [Phys. Rev. D 111. 103007](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.111.103007) for details.
 
 ---
-
-## High performance waveform generation based on Sasaki-Nakamura formalism
-
-<img src="../images/waveform_bound.pdf" alt="EMRI-bound" width="600"/>
-
-- Benefiting from the short-range nature of the Sasaki–Nakamura (SN) formalism, we can use it to compute gravitational-wave waveforms from point particles on both bound and unbound orbits.
-- The difficulties in solving the inhomogeneous SN source term and evaluating the Green’s function integral can be avoided by applying the integration-by-parts (IBP) technique.
-- The current implementation supports only the spin s=−2 case, i.e., waveforms and fluxes at infinity.
-- Work is ongoing to extend the formalism to the s=2 case, enabling the calculation of waveforms and fluxes at the black hole horizon.
-
-See [arXiv:2511.08673](https://arxiv.org/abs/2511.08673) for details.
