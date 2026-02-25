@@ -14,7 +14,7 @@ sidebar:
 
 - We derive a convergent source term for linear gravitational perturbation associate with the spin s=+2 perturbation
 
-- We validate the derivation by calculating the shear perturbation and the fluxes of a generic EMRI. Both of results agree with previous calculation in Teukolsky formalsim very well.
+- We validate the derivation by calculating the shear perturbation and the fluxes of a generic EMRI. Both of results agree with previous calculation in Teukolsky formalism very well.
 
 - See [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
 
