@@ -11,6 +11,4 @@ I am now a visiting fellow of the [Strong Group](https://strong-gr.com) at Niels
 
 My research is mainly about black hole perturbation theory and its various applications, including waveform modeling of different gravitational wave events (e.g. BBH, EMRI, b-EMRI), quasi-normal modes of black holes, and scattering of gravitational wave by black holes.
 
-Currently, I'm seeking for a PhD or Master's position in physics for the 2026 Fall enrollment.
-
 Email: yucheng.yin@nbi.ku.dk or cuber.ycyin@gmail.com
