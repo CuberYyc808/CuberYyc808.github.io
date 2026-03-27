@@ -8,27 +8,23 @@ sidebar:
 ---
 
 
-## Near-horizon perturbation of Kerr black holes
+## Near-horizon perturbation of Kerr black holes ([arXiv:2512.07937](https://arxiv.org/abs/2512.07937))
 
 <img src="../images/Waveform_horizon.pdf" alt="shear_perturbation_horizon" width="600"/>
 
 - We derive a convergent source term for linear gravitational perturbation associate with the spin s=+2 perturbation
 
-- We validate the derivation by calculating the shear perturbation and the fluxes of a generic EMRI. Both of results agree with previous calculation in Teukolsky formalism very well.
+- We validate the derivation by calculating the shear perturbation and the fluxes of a generic EMRI. Both of results agree with calculation in Teukolsky formalism very well.
 
 - See [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
 
-See [arXiv:2512.07937](https://arxiv.org/abs/2512.07937) for details.
-
-## High performance EMRI waveform generation based on Sasaki-Nakamura formalism
+## High performance EMRI waveform generation based on Sasaki-Nakamura formalism ([arXiv:2511.08673](https://arxiv.org/abs/2511.08673))
 
 <img src="../images/waveform_bound.pdf" alt="EMRI-bound" width="600"/>
 
 - Benefiting from the short-range nature of the Sasaki–Nakamura (SN) formalism, we can use it to compute gravitational-wave waveforms from point particles on both bound and unbound orbits.
 - The difficulties in solving the inhomogeneous SN source term and evaluating the Green’s function integral can be avoided by applying the integration-by-parts (IBP) technique.
 - See [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
-
-See [arXiv:2511.08673](https://arxiv.org/abs/2511.08673) for details.
 
 
 ## Binary extreme-mass-ratio inspiral (b-EMRI) waveform modeling
@@ -42,7 +38,5 @@ See [arXiv:2511.08673](https://arxiv.org/abs/2511.08673) for details.
 - What's interesting is that the small binary could resonantly excite the quasi-normal modes of the SMBH, leading to some distinguishable features.
 
 ![QNM_excitation_bEMRI](../images/QNM_excitation_bEMRI.png)
-
-See [Phys. Rev. D 111. 103007](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.111.103007) for details.
 
 ---
