@@ -27,7 +27,7 @@ sidebar:
 - See [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl) for our code implementation.
 
 
-## Binary extreme-mass-ratio inspiral (b-EMRI) waveform modeling
+## Binary extreme-mass-ratio inspiral (b-EMRI) waveform modeling ([*arXiv:2410.08673*](https://arxiv.org/abs/2410.09796))
 
 <img src="../images/b-EMRI.png" alt="b-EMRI" width="600"/>
 
