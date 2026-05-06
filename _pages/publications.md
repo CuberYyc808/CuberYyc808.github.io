@@ -10,7 +10,7 @@ Journal Articles
 
 - Rico K. L. Lo, **Yucheng Yin**, "Near-horizon gravitational perturbations of rotating black holes" [*Phys. Rev. D 113, L061505 (2026)*](https://journals.aps.org/prd/abstract/10.1103/bljh-l413), [*arXiv:2512.07937*](https://arxiv.org/abs/2512.07937)
 - **Yucheng Yin**, Rico K. L. Lo, Xian Chen, "Gravitational radiation from Kerr black holes using the Sasaki-Nakamura formalism:
-waveforms and fluxes at infinity" [*arXiv:2511.08673*](https://arxiv.org/abs/2511.08673) (under review in PRD)
+waveforms and fluxes at infinity" [*arXiv:2511.08673*](https://arxiv.org/abs/2511.08673) (accepted and in production in PRD)
 - **Yucheng Yin**, Josh Mathews, Alvin, J. K. Chua, and Xian Chen, "Relativistic model of binary extreme-mass-ratio inspiral systems and their gravitational radiation" [*Phys. Rev. D 111, 103007 (2025)*](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.111.103007), [*arXiv:2410.08673*](https://arxiv.org/abs/2410.09796)
 
 
