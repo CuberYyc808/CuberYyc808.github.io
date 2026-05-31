@@ -9,7 +9,7 @@ author_profile: true
 Linear gravitational perturbations of rotating black holes · <a href="https://arxiv.org/abs/2512.07937">arXiv:2512.07937</a>
 </div>
 
-<img src="{{ '/images/Waveform_horizon.pdf' | relative_url }}" alt="Near-horizon shear perturbation waveform" width="760"/>
+<img src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="Near-horizon shear perturbation waveform" width="760"/>
 
 This project studies the near-horizon behavior of gravitational perturbations in Kerr spacetime. The main technical point is to construct a convergent source term for the spin-weight \(s=+2\) perturbation, where the naive source representation can become difficult to evaluate stably close to the horizon.
 

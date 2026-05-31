@@ -55,7 +55,7 @@ author_profile: true
 <div class="research-grid">
   <article class="research-card">
     <a href="{{ '/research/near-horizon-kerr-perturbations/' | relative_url }}">
-      <img src="{{ '/images/Waveform_horizon.pdf' | relative_url }}" alt="Near-horizon Kerr perturbation waveform">
+      <img src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="Near-horizon Kerr perturbation waveform">
     </a>
     <div class="research-card__body">
       <div class="research-card__meta">Kerr perturbation theory</div>
@@ -67,7 +67,7 @@ author_profile: true
 
   <article class="research-card">
     <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">
-      <img src="{{ '/images/waveform_bound.pdf' | relative_url }}" alt="Bound-orbit waveform computed with Sasaki-Nakamura formalism">
+      <img src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Bound-orbit waveform computed with Sasaki-Nakamura formalism">
     </a>
     <div class="research-card__body">
       <div class="research-card__meta">EMRI waveforms</div>

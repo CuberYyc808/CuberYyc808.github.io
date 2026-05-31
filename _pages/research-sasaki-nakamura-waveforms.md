@@ -9,7 +9,7 @@ author_profile: true
 Waveforms and fluxes at infinity · <a href="https://arxiv.org/abs/2511.08673">arXiv:2511.08673</a>
 </div>
 
-<img src="{{ '/images/waveform_bound.pdf' | relative_url }}" alt="Bound-orbit waveform from Sasaki-Nakamura formalism" width="760"/>
+<img src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Bound-orbit waveform from Sasaki-Nakamura formalism" width="760"/>
 
 The Sasaki-Nakamura formalism rewrites the Kerr perturbation problem into a short-range wave equation. This makes it useful for waveform calculations, especially when one wants to evaluate radiation sourced by particles moving on bound or unbound Kerr geodesics.
 

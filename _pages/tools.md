@@ -61,7 +61,7 @@ author_profile: true
 <div class="tools-grid">
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.pdf' | relative_url }}" alt="Waveform thumbnail">
+      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Waveform thumbnail">
       <div>
         <h2>GeneralizedSasakiNakamura.jl</h2>
         <div class="tool-card__tag">Black-hole perturbation theory</div>
@@ -91,7 +91,7 @@ author_profile: true
 
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/Waveform_horizon.pdf' | relative_url }}" alt="Oscillatory signal thumbnail">
+      <img class="tool-card__thumb" src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="Oscillatory signal thumbnail">
       <div>
         <h2>AdaptiveLevin.jl</h2>
         <div class="tool-card__tag">Numerical algorithms</div>
