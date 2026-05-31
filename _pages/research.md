@@ -61,7 +61,7 @@ author_profile: true
       <div class="research-card__meta">Kerr perturbation theory</div>
       <h2><a href="{{ '/research/near-horizon-kerr-perturbations/' | relative_url }}">Near-Horizon Kerr Perturbations</a></h2>
       <p>Convergent source terms for spin-weight +2 gravitational perturbations near rotating black-hole horizons.</p>
-      <a class="research-card__link" href="{{ '/research/near-horizon-kerr-perturbations/' | relative_url }}">Read article</a>
+      <a class="research-card__link" href="https://arxiv.org/abs/2512.07937">Read article</a>
     </div>
   </article>
 
@@ -73,7 +73,7 @@ author_profile: true
       <div class="research-card__meta">EMRI waveforms</div>
       <h2><a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura Waveforms</a></h2>
       <p>Frequency-domain waveform and flux calculations using the short-range Sasaki-Nakamura equation.</p>
-      <a class="research-card__link" href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Read article</a>
+      <a class="research-card__link" href="https://arxiv.org/abs/2511.08673">Read article</a>
     </div>
   </article>
 
@@ -85,7 +85,7 @@ author_profile: true
       <div class="research-card__meta">Relativistic triple systems</div>
       <h2><a href="{{ '/research/binary-emri-waveform-modeling/' | relative_url }}">Binary EMRI Waveform Modeling</a></h2>
       <p>Relativistic three-body dynamics and black-hole perturbation theory for compact binaries around SMBHs.</p>
-      <a class="research-card__link" href="{{ '/research/binary-emri-waveform-modeling/' | relative_url }}">Read article</a>
+      <a class="research-card__link" href="https://arxiv.org/abs/2410.09796">Read article</a>
     </div>
   </article>
 </div>
