@@ -20,6 +20,7 @@ author_profile: true
   display: flex;
   flex-direction: column;
   min-height: 210px;
+  overflow: hidden;
 }
 .tool-card__head {
   display: grid;
@@ -27,6 +28,9 @@ author_profile: true
   gap: 0.75rem;
   align-items: center;
   margin-bottom: 0.65rem;
+}
+.tool-card__head > div {
+  min-width: 0;
 }
 .tool-card__thumb {
   width: 52px;
@@ -40,6 +44,7 @@ author_profile: true
   font-size: 1.02rem;
   line-height: 1.2;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 .tool-card__tag {
   color: #6e7781;
