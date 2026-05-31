@@ -17,6 +17,9 @@ author_profile: true
   border-radius: 8px;
   background: #fff;
   padding: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 210px;
 }
 .tool-card__head {
   display: grid;
@@ -49,12 +52,10 @@ author_profile: true
   line-height: 1.45;
   margin: 0 0 0.75rem;
 }
-.tool-card pre {
-  font-size: 0.72rem;
-  margin: 0.75rem 0;
-}
 .tool-card__links a {
+  display: inline-block;
   font-weight: 600;
+  margin-top: auto;
 }
 </style>
 
@@ -68,9 +69,6 @@ author_profile: true
       </div>
     </div>
     <p>Julia tools for metric and curvature perturbations in Kerr spacetime, including source-driven inhomogeneous calculations.</p>
-    <pre><code>using GeneralizedSasakiNakamura
-# build source, solve radial equation,
-# evaluate amplitudes and fluxes</code></pre>
     <div class="tool-card__links"><a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a></div>
   </article>
 
@@ -83,9 +81,6 @@ author_profile: true
       </div>
     </div>
     <p>Bound timelike Kerr geodesics parameterized by orbital elements, useful for EMRI and b-EMRI waveform pipelines.</p>
-    <pre><code>using KerrGeodesics
-# orbit = KerrOrbit(a, p, e, x)
-# sample trajectory and constants</code></pre>
     <div class="tool-card__links"><a href="https://github.com/CuberYyc808/KerrGeodesics.jl">GitHub</a></div>
   </article>
 
@@ -98,9 +93,6 @@ author_profile: true
       </div>
     </div>
     <p>Adaptive Levin methods for one- and two-dimensional highly oscillatory integrals.</p>
-    <pre><code>using AdaptiveLevin
-# integrate amplitude * exp(i * phase)
-# with adaptive Levin quadrature</code></pre>
     <div class="tool-card__links"><a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">GitHub</a></div>
   </article>
 </div>
