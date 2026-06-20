@@ -327,15 +327,15 @@ The effect is simple: the difficult high $n$ integrals no longer require the sam
 <div class="isem-metric">
   <div class="isem-metric__item">
     <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">typical post warm time for generic 2D convolution integral evaluation</span>
+    <span class="isem-metric__label">typical post warm time for generic case 2D convolution integral evaluation</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">95% of high $n$ modes finish within this time</span>
+    <span class="isem-metric__label">95% of high $n$ modes in generic case 2D convolution integrals finish within this time</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">&lt;5 ms</span>
-    <span class="isem-metric__label">95% of comparable 1D interval tests finish below this scale</span>
+    <span class="isem-metric__label">95% of eccentric case 1D integral tests finish below this scale</span>
   </div>
 </div>
 
