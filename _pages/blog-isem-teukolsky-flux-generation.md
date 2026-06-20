@@ -8,6 +8,20 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
 ---
 
 <style>
+:root {
+  --isem-surface: #ffffff;
+  --isem-surface-alt: #f8fafc;
+  --isem-text: #17202a;
+  --isem-muted: #475569;
+  --isem-border: #d8dee4;
+}
+html[data-theme="dark"] {
+  --isem-surface: #ffffff;
+  --isem-surface-alt: #f8fafc;
+  --isem-text: #111827;
+  --isem-muted: #334155;
+  --isem-border: #cbd5e1;
+}
 .isem-note {
   color: var(--global-text-color-light);
   font-size: 1rem;
@@ -29,24 +43,27 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin: 1.1rem 0 1.4rem;
 }
 .isem-links a {
-  border: 1px solid var(--global-border-color);
+  border: 1px solid var(--isem-border);
   border-radius: 8px;
+  color: var(--isem-text);
   padding: 0.75rem 0.85rem;
   text-decoration: none;
   font-weight: 600;
-  background: var(--global-bg-color);
+  background: var(--isem-surface);
 }
 .isem-diagram {
-  border: 1px solid var(--global-border-color);
+  border: 1px solid var(--isem-border);
   border-radius: 8px;
-  background: var(--global-bg-color);
+  background: var(--isem-surface);
+  color: var(--isem-text);
   padding: 1rem;
   margin: 1.2rem 0 1.4rem;
 }
 .isem-figure {
-  border: 1px solid var(--global-border-color);
+  border: 1px solid var(--isem-border);
   border-radius: 8px;
-  background: var(--global-bg-color);
+  background: var(--isem-surface);
+  color: var(--isem-text);
   margin: 1.2rem 0 1.5rem;
   overflow: hidden;
 }
@@ -56,7 +73,7 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   height: auto;
 }
 .isem-figure figcaption {
-  color: var(--global-text-color-light);
+  color: var(--isem-muted);
   font-size: 0.84rem;
   line-height: 1.45;
   padding: 0.65rem 0.85rem 0.8rem;
@@ -72,9 +89,10 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   align-items: stretch;
 }
 .isem-flow__box {
-  border: 1px solid var(--global-border-color);
+  border: 1px solid var(--isem-border);
   border-radius: 8px;
-  background: var(--global-thead-color);
+  background: var(--isem-surface-alt);
+  color: var(--isem-text);
   padding: 0.7rem 0.8rem;
 }
 .isem-flow__box strong {
@@ -83,7 +101,7 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin-bottom: 0.25rem;
 }
 .isem-flow__box span {
-  color: var(--global-text-color-light);
+  color: var(--isem-muted);
   display: block;
   font-size: 0.82rem;
   line-height: 1.4;
@@ -95,9 +113,10 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin: 1.2rem 0 1.4rem;
 }
 .isem-compare__panel {
-  border: 1px solid var(--global-border-color);
+  border: 1px solid var(--isem-border);
   border-radius: 8px;
-  background: var(--global-bg-color);
+  background: var(--isem-surface);
+  color: var(--isem-text);
   padding: 0.95rem;
 }
 .isem-compare__panel h3 {
@@ -106,13 +125,14 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
 }
 .isem-compare__panel p,
 .isem-compare__panel li {
-  color: var(--global-text-color-light);
+  color: var(--isem-muted);
   font-size: 0.9rem;
   line-height: 1.5;
 }
 .isem-callout {
-  border-left: 4px solid var(--global-text-color-light);
-  background: var(--global-thead-color);
+  border-left: 4px solid var(--isem-muted);
+  background: var(--isem-surface-alt);
+  color: var(--isem-text);
   padding: 0.85rem 1rem;
   margin: 1.2rem 0;
 }
@@ -123,8 +143,9 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin: 1.1rem 0 1.4rem;
 }
 .isem-step {
-  border-top: 3px solid var(--global-text-color-light);
-  background: var(--global-bg-color);
+  border-top: 3px solid var(--isem-muted);
+  background: var(--isem-surface);
+  color: var(--isem-text);
   padding: 0.8rem 0.9rem;
 }
 .isem-step strong {
@@ -133,7 +154,7 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
 }
 .isem-step p {
   margin: 0;
-  color: var(--global-text-color-light);
+  color: var(--isem-muted);
   font-size: 0.92rem;
   line-height: 1.5;
 }
@@ -144,9 +165,10 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin: 1rem 0 1.4rem;
 }
 .isem-metric__item {
-  border: 1px solid var(--global-border-color);
+  border: 1px solid var(--isem-border);
   border-radius: 8px;
-  background: var(--global-thead-color);
+  background: var(--isem-surface-alt);
+  color: var(--isem-text);
   padding: 0.85rem;
 }
 .isem-metric__value {
@@ -156,13 +178,21 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   line-height: 1.1;
 }
 .isem-metric__label {
-  color: var(--global-text-color-light);
+  color: var(--isem-muted);
   display: block;
   font-size: 0.82rem;
   line-height: 1.35;
   margin-top: 0.35rem;
 }
 </style>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">Technical blog</div>
 <p class="isem-note"><strong>ISEM is not the whole blog. ISEM, short for iterative series expansion matching, is a radial solver. The real story is how that radial layer is combined with shell-ordered mode summation and Adaptive Levin integration to make high-eccentricity flux production usable.</strong></p>
@@ -184,7 +214,7 @@ That is the motivation for this note. ISEM itself is the radial-solver layer. Ar
     <div class="isem-flow__box"><strong>Kerr orbit</strong><span>frequencies, phases, turning points</span></div>
     <div class="isem-flow__box"><strong>Radial solver</strong><span>ISEM / Teukolsky / GSN homogeneous solutions</span></div>
     <div class="isem-flow__box"><strong>Source integral</strong><span>trapezoidal or Adaptive Levin depending on the tail</span></div>
-    <div class="isem-flow__box"><strong>Mode shells</strong><span>&ell;, m, k grouped outside; n monitored as radial tail</span></div>
+    <div class="isem-flow__box"><strong>Mode shells</strong><span>$\ell$, $m$, $k$ grouped outside; $n$ monitored as radial tail</span></div>
     <div class="isem-flow__box"><strong>Flux dataset</strong><span>infinity and horizon branches with recorded convergence metadata</span></div>
   </div>
 </div>
@@ -223,7 +253,7 @@ This matters because the radial solve sits inside every mode calculation. If the
 
 ## The important change: how the mode sum is ordered
 
-For eccentric equatorial orbits the radial index `n` is the natural tail coordinate. For generic orbits there is also a polar index `k`, but the same lesson remains: high eccentricity shows up very clearly in the radial harmonic tail. If `n` is buried inside a rectangular grid, truncation is harder to interpret.
+For eccentric equatorial orbits the radial index $n$ is the natural tail coordinate. For generic orbits there is also a polar index $k$, but the same lesson remains: high eccentricity shows up very clearly in the radial harmonic tail. If $n$ is buried inside a rectangular grid, truncation is harder to interpret.
 
 The older mental model is:
 
@@ -231,39 +261,39 @@ The older mental model is:
   <div class="isem-compare__panel">
     <h3>Rectangular-grid mindset</h3>
     <ul>
-      <li>First enlarge the radial/polar block: `n`, then `k`.</li>
-      <li>Then enlarge azimuthal and angular content: `m`, then `\ell`.</li>
+      <li>First enlarge the radial/polar block: $n$, then $k$.</li>
+      <li>Then enlarge azimuthal and angular content: $m$, then $\ell$.</li>
       <li>Easy to implement, but the radial tail is mixed into the whole rectangle.</li>
     </ul>
   </div>
   <div class="isem-compare__panel">
     <h3>Production workflow mindset</h3>
     <ul>
-      <li>Reverse the practical control order: `\ell`, then `m`, then `k`.</li>
-      <li>Leave `n` last, as the radial tail direction to monitor.</li>
-      <li>For high eccentricity, the stopping point becomes visible as an `n`-shell decision.</li>
+      <li>Reverse the practical control order: $\ell$, then $m$, then $k$.</li>
+      <li>Leave $n$ last, as the radial tail direction to monitor.</li>
+      <li>For high eccentricity, the stopping point becomes visible as an $n$-shell decision.</li>
     </ul>
   </div>
 </div>
 
-This is not really an ISEM claim. It is a mode-summation claim. The benefit is conceptual and practical: once `n` is treated as the radial tail coordinate, the code can report where the infinity and horizon branches reached, what the last shell contributed, and whether the user should increase `nmax`. In a high-eccentricity run, that is exactly the diagnostic you want. You can literally see whether the radial tail is dead or still alive.
+This is not really an ISEM claim. It is a mode-summation claim. The benefit is conceptual and practical: once $n$ is treated as the radial tail coordinate, the code can report where the infinity and horizon branches reached, what the last shell contributed, and whether the user should increase $n_\mathrm{max}$. In a high-eccentricity run, that is exactly the diagnostic you want. You can literally see whether the radial tail is dead or still alive.
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Mode-summation flow</div>
   <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Select &ell; shell</strong><span>angular resolution layer</span></div>
-    <div class="isem-flow__box"><strong>Select m branch</strong><span>azimuthal structure and frequency sign</span></div>
-    <div class="isem-flow__box"><strong>Select k shell</strong><span>polar harmonic structure for generic orbits</span></div>
-    <div class="isem-flow__box"><strong>Scan n tail</strong><span>radial harmonic tail; high-eccentricity truncation is visible here</span></div>
+    <div class="isem-flow__box"><strong>Select $\ell$ shell</strong><span>angular resolution layer</span></div>
+    <div class="isem-flow__box"><strong>Select $m$ branch</strong><span>azimuthal structure and frequency sign</span></div>
+    <div class="isem-flow__box"><strong>Select $k$ shell</strong><span>polar harmonic structure for generic orbits</span></div>
+    <div class="isem-flow__box"><strong>Scan $n$ tail</strong><span>radial harmonic tail; high-eccentricity truncation is visible here</span></div>
     <div class="isem-flow__box"><strong>Latch method</strong><span>switch tail modes to Adaptive Levin when oscillations dominate</span></div>
   </div>
 </div>
 
-In local benchmark notes, a grouped mode ordering was the fastest tested trapezoidal-SIMD path for one 10,000-mode generic high-e manifest. The blog-level takeaway is broader than that exact file name: group slow-changing structure, keep tail diagnostics explicit, and do not let a four-dimensional rectangle hide convergence. The user-facing workflow is therefore `\ell -> m -> k -> n`: angular structure first, radial tail last.
+In local benchmark notes, a grouped mode ordering was the fastest tested trapezoidal-SIMD path for one 10,000-mode generic high-e manifest. The blog-level takeaway is broader than that exact file name: group slow-changing structure, keep tail diagnostics explicit, and do not let a four-dimensional rectangle hide convergence. The user-facing workflow is therefore $\ell \to m \to k \to n$: angular structure first, radial tail last.
 
 ## Adaptive Levin: use the right tool for the tail
 
-The second piece is Adaptive Levin integration. For high-eccentricity modes, especially large `n`, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase.
+The second piece is Adaptive Levin integration. For high-eccentricity modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase.
 
 Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy. That is why it is a natural tail method: use simpler rules when the mode is easy; switch when the high-frequency source structure appears. In large batches, the other important point is reuse: orbit samples, phase data, workspaces, and branch metadata should not be rebuilt from scratch for every single mode.
 
@@ -271,14 +301,14 @@ Adaptive Levin changes the problem. Instead of sampling the oscillation blindly,
   <div class="isem-diagram__title">Adaptive Levin flow</div>
   <div class="isem-flow">
     <div class="isem-flow__box"><strong>Precompute orbit data</strong><span>reuse geodesic samples and phase information across batches</span></div>
-    <div class="isem-flow__box"><strong>Detect tail mode</strong><span>large radial harmonic or difficult generic `(n,k)` row</span></div>
-    <div class="isem-flow__box"><strong>Refine radially</strong><span>the high-`n` oscillation is mainly radial</span></div>
+    <div class="isem-flow__box"><strong>Detect tail mode</strong><span>large radial harmonic or difficult generic $(n,k)$ row</span></div>
+    <div class="isem-flow__box"><strong>Refine radially</strong><span>the high-$n$ oscillation is mainly radial</span></div>
     <div class="isem-flow__box"><strong>Use theta CC</strong><span>fixed polar Clenshaw-Curtis nodes for generic 2D integrals</span></div>
     <div class="isem-flow__box"><strong>Record metadata</strong><span>segments, depth, stop reason, and effective intervals</span></div>
   </div>
 </div>
 
-The current generic high-e recommendation from local tests is radial adaptive Levin plus fixed theta Clenshaw-Curtis. With a conservative `17x17` local grid, the benchmark summary reports a post-warm median of `8.925 ms` on a stratified 1000-row sample; focused low/high-`n` 100-row checks are around the same scale, with high-`n` p95 reported at `16.531 ms`. For representative eccentric single-mode checks, warmed low-mode timings are already well below the `5 ms` scale; for harder eccentric tail batches, repeated-run timings in the cache-reuse benchmark are several-to-tens of milliseconds per mode across sampled orbits.
+The current generic high-e recommendation from local tests is radial adaptive Levin plus fixed theta Clenshaw-Curtis. With a conservative $17\times17$ local grid, the benchmark summary reports a post-warm median of 8.925 ms on a stratified 1000-row sample; focused low/high-$n$ 100-row checks are around the same scale, with high-$n$ p95 reported at 16.531 ms. For representative eccentric single-mode checks, warmed low-mode timings are already well below the 5 ms scale; for harder eccentric tail batches, repeated-run timings in the cache-reuse benchmark are several-to-tens of milliseconds per mode across sampled orbits.
 
 Those numbers are not a paper-level universal claim; they are engineering benchmarks for the current open-source path. They explain why this workflow is worth trying. For the cases it is designed for, the single-mode source integral is no longer the hopeless bottleneck it used to look like, and the generic 2D path is already operating around the 10 ms scale in the best current route.
 
@@ -289,7 +319,7 @@ Those numbers are not a paper-level universal claim; they are engineering benchm
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">reported high-`n` p95 in focused 100-row generic check</span>
+    <span class="isem-metric__label">reported high-$n$ p95 in focused 100-row generic check</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">&lt;5 ms</span>
