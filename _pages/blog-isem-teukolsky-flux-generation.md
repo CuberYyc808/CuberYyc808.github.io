@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "A practical adiabatic (0PA) flux workflow for high-eccentricity EMRIs"
+title: "A practical adiabatic (0PA) flux workflow for eccentric EMRIs"
 permalink: /blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: en
@@ -205,11 +205,11 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">Technical blog</div>
-<p class="isem-note"><strong>This note introduces a practical workflow for large-scale 0PA flux generation: a reusable radial-solver layer, a tail-aware mode-summation order, and Adaptive Levin integration for difficult high-eccentricity modes.</strong></p>
+<p class="isem-note"><strong>This note introduces a practical workflow for large scale 0PA flux generation: a reusable radial solver layer, a tail aware mode summation order, and Adaptive Levin integration for difficult eccentric modes.</strong></p>
 
-In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
+In EMRI waveform work, a flux calculation is rarely a one time exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
-The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where high-eccentricity source integrals become strongly oscillatory.
+The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where eccentric source integrals become strongly oscillatory.
 
 <div class="isem-links">
   <a href="{{ '/tools/' | relative_url }}">Tools overview</a>
@@ -231,15 +231,15 @@ The workflow has three parts. First, the radial equation is handled by an iterat
 
 ## Motivation: why this is worth doing
 
-LISA, Taiji, and TianQin are space-based gravitational-wave detector projects. One important class of sources for these missions is EMRIs, where 0PA flux generation becomes a production-scale numerical task rather than a small script. Frequency-domain Teukolsky calculations are accurate and modular, but the cost grows sharply when the orbit becomes highly eccentric, inclined, and precessing. In the fully generic case, the signal power is spread across a large set of $(\ell,m,k,n)$ modes. If the time for a single mode cannot be reduced effectively, the full flux calculation becomes a large computational expense.
+LISA, Taiji, and TianQin are space based gravitational wave detector projects. One important class of sources for these missions is EMRIs, where 0PA flux generation becomes a production scale numerical task rather than a small script. Frequency domain Teukolsky calculations are accurate and modular, but the cost grows sharply when the orbit becomes highly eccentric, inclined, and precessing. In the fully generic case, the signal power is spread across a large set of $(\ell,m,k,n)$ modes. If the time for a single mode cannot be reduced effectively, the full flux calculation becomes a large computational expense.
 
-The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to brute-force.
+The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to force through a larger grid.
 
-## The radial-solver layer
+## The radial solver layer
 
 The first piece is the radial solver. Here the radial Teukolsky equation is handled by iterative series expansion matching, abbreviated as ISEM below. The idea is to use the transformed form of the Teukolsky equation, build series expansions from the horizon and from infinity, and then propagate the two physical branches toward an intermediate matching point. At that point, the solution and its radial derivative are matched to determine the matching coefficients, which are also the asymptotic amplitudes needed for flux evaluation. The full radial solution is then reconstructed from the matched branches.
 
-This is the right place to spend effort because the radial solve sits inside every mode calculation and has long been a bottleneck in the source-integral calculation. In the current implementation, this construction is roughly two orders of magnitude faster than the traditional direct numerical GSN solve and MST-based routes for the same repeated mode-production use case. Reducing this per-mode cost is what makes the larger 0PA flux workflow practical.
+This is the right place to spend effort because the radial solve sits inside every mode calculation and has long been a bottleneck in the source integral calculation. In the current implementation, this construction is roughly two orders of magnitude faster than the traditional direct numerical GSN solve and MST based routes for the same repeated mode production use case. Reducing this cost for each mode is what makes the larger 0PA flux workflow practical.
 
 <figure class="isem-figure">
   <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Animated illustration of iterative series expansion matching for radial Teukolsky solutions">
@@ -249,7 +249,7 @@ This is the right place to spend effort because the radial solve sits inside eve
 <div class="isem-steps">
   <div class="isem-step">
     <strong>Homogeneous solutions</strong>
-    <p>Build horizon-side and infinity-side homogeneous radial Teukolsky solutions from controlled series expansions.</p>
+    <p>Build horizon side and infinity side homogeneous radial Teukolsky solutions from controlled series expansions.</p>
   </div>
   <div class="isem-step">
     <strong>Matching coefficients</strong>
@@ -261,42 +261,42 @@ This is the right place to spend effort because the radial solve sits inside eve
   </div>
 </div>
 
-## The second piece: how modes are added together
+## How modes are added together
 
-The second piece is the mode-summation order. The useful empirical structure is that the largest contributions usually sit close to the diagonal in angular space: for a fixed $\ell$, modes with $m=\pm \ell$ are often among the dominant branches. A direct rectangular loop does not exploit this structure. If one fixes $\ell$ and then scans all $m$ from $-\ell$ to $\ell$, and then repeats this inside large $k$ and $n$ ranges, the calculation can spend many modes before the relevant convergence pattern becomes clear.
+Next comes the mode summation order. The useful empirical structure is that the largest contributions usually sit close to the diagonal in angular space: for a fixed $\ell$, modes with $m=\pm \ell$ are often among the dominant branches. A direct rectangular loop does not exploit this structure. If one fixes $\ell$ and then scans all $m$ from $-\ell$ to $\ell$, and then repeats this inside large $k$ and $n$ ranges, the calculation can spend many modes before the relevant convergence pattern becomes clear.
 
-A more useful order is to fix $m$ and grow $\ell$ from $\max(|m|,2)$ upward. This makes the angular convergence easier to see. The same idea can then be extended to the polar and radial harmonics. The $k$ direction often converges quickly, usually within about ten shells for the cases considered here, while the radial harmonic $n$ is slower and carries the long eccentricity tail. For that reason, $n$ is left as the final summation direction.
+A more useful order is to fix $m$ and grow $\ell$ from $\max(\mathrm{abs}(m),2)$ upward. This makes the angular convergence easier to see. The same idea can then be extended to the polar and radial harmonics. The $k$ direction often converges quickly, usually within about ten shells for the cases considered here, while the radial harmonic $n$ is slower and carries the long eccentricity tail. For that reason, $n$ is left as the final summation direction.
 
 The older mental model is:
 
 <div class="isem-compare">
   <div class="isem-compare__panel">
-    <h3>Rectangular-grid mindset</h3>
+    <h3>Rectangular grid mindset</h3>
     <ul>
-      <li>Choose a large box in $(\ell,m,k,n)$.</li>
+      <li>Choose a large box in (&ell;, m, k, n).</li>
       <li>Loop through the full block even when many entries are already negligible.</li>
-      <li>The slow radial tail is mixed into the whole four-dimensional rectangle.</li>
+      <li>The slow radial tail is mixed into the whole four dimensional rectangle.</li>
     </ul>
   </div>
   <div class="isem-compare__panel">
     <h3>Production workflow mindset</h3>
     <ul>
-      <li>For each $m$, grow $\ell$ from $\max(|m|,2)$ upward.</li>
-      <li>Add the faster $k$ shells before the slow radial direction.</li>
-      <li>Leave $n$ last, so the high-eccentricity truncation is visible.</li>
+      <li>For each m, grow &ell; from max(abs(m), 2) upward.</li>
+      <li>Add the faster k shells before the slow radial direction.</li>
+      <li>Leave n last, so the eccentric tail truncation is visible.</li>
     </ul>
   </div>
 </div>
 
-The practical advantage is that convergence becomes easier to diagnose. Instead of asking whether a whole rectangular block is large enough, the code can report where the infinity and horizon branches reached in $n$, how large the final shell contribution is, and whether $n_\mathrm{max}$ should be increased. In this ordering, the maximum radial truncation used in the code is $n_\mathrm{max}=500$, which is stable for the target cases with $e<0.9$. Compared with the rectangular ordering, this shell-aware order typically reduces the number of modes that need to be evaluated by about 50%, while making the truncation decision more transparent.
+The practical advantage is that convergence becomes easier to diagnose. Instead of asking whether a whole rectangular block is large enough, the code can report where the infinity and horizon branches reached in $n$, how large the final shell contribution is, and whether $n_\mathrm{max}$ should be increased. In this ordering, the maximum radial truncation used in the code is $n_\mathrm{max}=500$, which is stable for the target cases with $e<0.9$. Compared with the rectangular ordering, this shell aware order typically reduces the number of modes that need to be evaluated by about 50%, while making the truncation decision more transparent.
 
 <div class="isem-diagram">
-  <div class="isem-diagram__title">Mode-summation flow</div>
+  <div class="isem-diagram__title">Mode summation flow</div>
   <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Select $\ell$ shell</strong><span>angular resolution layer</span></div>
-    <div class="isem-flow__box"><strong>Select $m$ branch</strong><span>azimuthal structure and frequency sign</span></div>
-    <div class="isem-flow__box"><strong>Select $k$ shell</strong><span>polar harmonic structure for generic orbits</span></div>
-    <div class="isem-flow__box"><strong>Scan $n$ tail</strong><span>radial harmonic tail; high-eccentricity truncation is visible here</span></div>
+    <div class="isem-flow__box"><strong>Select &ell; shell</strong><span>angular resolution layer</span></div>
+    <div class="isem-flow__box"><strong>Select m branch</strong><span>azimuthal structure and frequency sign</span></div>
+    <div class="isem-flow__box"><strong>Select k shell</strong><span>polar harmonic structure for generic orbits</span></div>
+    <div class="isem-flow__box"><strong>Scan n tail</strong><span>radial harmonic tail; eccentric truncation is visible here</span></div>
     <div class="isem-flow__box"><strong>Latch method</strong><span>switch tail modes to Adaptive Levin when oscillations dominate</span></div>
   </div>
 </div>
@@ -305,9 +305,9 @@ The resulting workflow is therefore $\ell \to m \to k \to n$: angular structure 
 
 ## Adaptive Levin: use the right tool for the tail
 
-The third piece is Adaptive Levin integration. For high-eccentricity modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one-dimensional radial integrations, a standard sampling-based route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
+The third piece is Adaptive Levin integration. For eccentric modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one dimensional radial integrations, a standard sampling route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
 
-Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy and splits the interval into smaller adaptive segments. On each local segment, the working grid is small, typically $17\times17$ in the two-dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$ for the Levin system on a segment, and the total cost scales with the number of accepted segments rather than with one globally inflated sampling grid. For generic two-dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw-Curtis quadrature in the $\zeta$ direction.
+Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy and splits the interval into smaller adaptive segments. On each local segment, the working grid is small, typically $17\times17$ in the two dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$ for the Levin system on a segment, and the total cost scales with the number of accepted segments rather than with one globally inflated sampling grid. For generic two dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw Curtis quadrature in the $\zeta$ direction.
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin flow</div>
@@ -315,25 +315,25 @@ Adaptive Levin changes the problem. Instead of sampling the oscillation blindly,
     <div class="isem-flow__box"><strong>Precompute orbit data</strong><span>reuse geodesic samples and phase information across batches</span></div>
     <div class="isem-flow__box"><strong>Detect tail mode</strong><span>large radial harmonic or difficult generic $(n,k)$ row</span></div>
     <div class="isem-flow__box"><strong>Refine radially</strong><span>the high-$n$ oscillation is mainly radial</span></div>
-    <div class="isem-flow__box"><strong>Use theta CC</strong><span>fixed polar Clenshaw-Curtis nodes for generic 2D integrals</span></div>
+    <div class="isem-flow__box"><strong>Use theta CC</strong><span>fixed polar Clenshaw Curtis nodes for generic 2D integrals</span></div>
     <div class="isem-flow__box"><strong>Record metadata</strong><span>segments, depth, stop reason, and effective intervals</span></div>
   </div>
 </div>
 
-The effect is simple: the difficult high-$n$ integrals no longer require the same brute-force sampling strategy as the easy modes. Radial Adaptive Levin plus fixed-$\zeta$ Clenshaw-Curtis keeps the high-frequency radial direction under control, while still using a stable tensor-product structure for generic orbits.
+The effect is simple: the difficult high $n$ integrals no longer require the same brute force sampling strategy as the easy modes. Radial Adaptive Levin plus fixed $\zeta$ Clenshaw Curtis keeps the high frequency radial direction under control, while still using a stable tensor product structure for generic orbits.
 
 <div class="isem-metric">
   <div class="isem-metric__item">
     <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">post-warm median for generic 2D convolution integral tests, stratified 1000-row sample</span>
+    <span class="isem-metric__label">post warm median for generic 2D convolution integral tests, stratified 1000 row sample</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">reported high-$n$ p95 in focused 100-row generic check</span>
+    <span class="isem-metric__label">reported high $n$ p95 in focused 100 row generic check</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">&lt;5 ms</span>
-    <span class="isem-metric__label">representative warmed eccentric single-mode checks can fall below this scale</span>
+    <span class="isem-metric__label">representative warmed eccentric single mode checks can fall below this scale</span>
   </div>
 </div>
 

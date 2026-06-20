@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "面向高偏心率 EMRI 的 adiabatic (0PA) 能流生成流程"
+title: "面向偏心 EMRI 的 adiabatic (0PA) 能流生成流程"
 permalink: /zh/blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: zh
@@ -205,7 +205,7 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">技术博客</div>
-<p class="isem-note"><strong>这篇 note 介绍一个面向大规模频域 0PA flux generation 的实用 workflow：可复用的径向求解层、能看清尾部截断的 mode-summation 顺序，以及用于高偏心率困难 mode 的 Adaptive Levin 积分。</strong></p>
+<p class="isem-note"><strong>这篇 note 介绍一个面向大规模频域 0PA flux generation 的实用 workflow：可复用的径向求解层、能看清尾部截断的 mode summation 顺序，以及用于高偏心率困难 mode 的 Adaptive Levin 积分。</strong></p>
 
 做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不只是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
 
@@ -249,7 +249,7 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
 <div class="isem-steps">
   <div class="isem-step">
     <strong>齐次解</strong>
-    <p>从受控的级数展开构造 horizon-side 和 infinity-side homogeneous radial Teukolsky solutions。</p>
+    <p>从受控的级数展开构造 horizon side 和 infinity side homogeneous radial Teukolsky solutions。</p>
   </div>
   <div class="isem-step">
     <strong>Matching coefficients</strong>
@@ -261,11 +261,11 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
   </div>
 </div>
 
-## 第二块：mode 怎么加在一起
+## Mode 怎么加在一起
 
-第二块是 mode summation 的顺序。一个很有用的经验结构是，贡献更大的 mode 往往在角向空间里接近对角线：对固定的 $\ell$ 来说，$m=\pm \ell$ 的分支通常是比较重要的贡献。直接做 rectangular loop 并没有利用这个结构。如果固定 $\ell$，再从 $-\ell$ 到 $\ell$ 扫完整个 $m$，然后再套进很大的 $k$ 和 $n$ 范围，程序会算很多 mode 之后才看得清真正的收敛结构。
+接下来是 mode summation 的顺序。一个很有用的经验结构是，贡献更大的 mode 往往在角向空间里接近对角线：对固定的 $\ell$ 来说，$m=\pm \ell$ 的分支通常是比较重要的贡献。直接做 rectangular loop 并没有利用这个结构。如果固定 $\ell$，再从 $-\ell$ 到 $\ell$ 扫完整个 $m$，然后再套进很大的 $k$ 和 $n$ 范围，程序会算很多 mode 之后才看得清真正的收敛结构。
 
-更自然的顺序是固定 $m$，然后让 $\ell$ 从 $\max(|m|,2)$ 开始往上加。这样角向收敛更容易判断。同样的想法也可以推广到 $k$ 和 $n$。$k$ 方向通常收敛更快，在这里考虑的情形里一般十个 shell 左右就可以降到很小；而径向谐波 $n$ 收敛更慢，承载高偏心率带来的长尾。因此把 $n$ 放在最后，是为了把最慢的 radial tail 暴露出来。
+更自然的顺序是固定 $m$，然后让 $\ell$ 从 $\max(\mathrm{abs}(m),2)$ 开始往上加。这样角向收敛更容易判断。同样的想法也可以推广到 $k$ 和 $n$。$k$ 方向通常收敛更快，在这里考虑的情形里一般十个 shell 左右就可以降到很小；而径向谐波 $n$ 收敛更慢，承载高偏心率带来的长尾。因此把 $n$ 放在最后，是为了把最慢的 radial tail 暴露出来。
 
 以前很自然的想法是：
 
@@ -273,7 +273,7 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
   <div class="isem-compare__panel">
     <h3>Rectangular grid 思路</h3>
     <ul>
-      <li>先选一个很大的 $(\ell,m,k,n)$ box。</li>
+      <li>先选一个很大的 (&ell;, m, k, n) box。</li>
       <li>即使很多条目已经很小，也会在整个 block 里继续扫。</li>
       <li>最慢的 radial tail 被混进四维矩形里，不容易判断截断。</li>
     </ul>
@@ -281,9 +281,9 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
   <div class="isem-compare__panel">
     <h3>Production workflow 思路</h3>
     <ul>
-      <li>对每个 $m$，让 $\ell$ 从 $\max(|m|,2)$ 开始往上加。</li>
-      <li>先处理收敛更快的 $k$ shell。</li>
-      <li>把 $n$ 留在最后，让高偏心率截断直接可见。</li>
+      <li>对每个 m，让 &ell; 从 max(abs(m), 2) 开始往上加。</li>
+      <li>先处理收敛更快的 k shell。</li>
+      <li>把 n 留在最后，让高偏心率截断直接可见。</li>
     </ul>
   </div>
 </div>
@@ -293,10 +293,10 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
 <div class="isem-diagram">
   <div class="isem-diagram__title">Mode summation 流程</div>
   <div class="isem-flow">
-    <div class="isem-flow__box"><strong>选 $\ell$ shell</strong><span>角向分辨率层</span></div>
-    <div class="isem-flow__box"><strong>选 $m$ branch</strong><span>方位角结构和频率符号</span></div>
-    <div class="isem-flow__box"><strong>选 $k$ shell</strong><span>generic 轨道的极向谐波结构</span></div>
-    <div class="isem-flow__box"><strong>扫描 $n$ tail</strong><span>径向谐波尾部；高偏心率截断在这里最清楚</span></div>
+    <div class="isem-flow__box"><strong>选 &ell; shell</strong><span>角向分辨率层</span></div>
+    <div class="isem-flow__box"><strong>选 m branch</strong><span>方位角结构和频率符号</span></div>
+    <div class="isem-flow__box"><strong>选 k shell</strong><span>generic 轨道的极向谐波结构</span></div>
+    <div class="isem-flow__box"><strong>扫描 n tail</strong><span>径向谐波尾部；偏心率截断在这里最清楚</span></div>
     <div class="isem-flow__box"><strong>切换方法</strong><span>尾部强振荡 mode 切到 Adaptive Levin</span></div>
   </div>
 </div>
@@ -307,7 +307,7 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
 
 第三块是 Adaptive Levin。高偏心率 mode，尤其是大的 $n$，源项积分会出现很强的振荡。普通求积方法在这种情况下会把大量采样点花在“追相位”上。以一维径向积分为例，普通采样型方法可能需要约 $2^{14}=16384$ 个径向采样点才能达到需要的收敛；Adaptive Levin 路径有效上大约到 $2048$ 这个量级就可以达到类似的收敛效果。
 
-Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进积分策略里，并且把积分区间自适应地切成更小的片段。每个小区间上使用很小的 local grid，二维设置里通常是 $17\times17$。局部 Levin 系统的 dense solve 对每个 segment 大约按 $O(q^3)$ 缩放，这里 $q=17$；总成本随被接受的小区间数增长，而不是随一个全局膨胀的采样网格增长。对 generic 2D 积分，当前做法是在 radial 方向用 Adaptive Levin，在 $\zeta$ 方向用 Clenshaw-Curtis。
+Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进积分策略里，并且把积分区间自适应地切成更小的片段。每个小区间上使用很小的 local grid，二维设置里通常是 $17\times17$。局部 Levin 系统的 dense solve 对每个 segment 大约按 $O(q^3)$ 缩放，这里 $q=17$；总成本随被接受的小区间数增长，而不是随一个全局膨胀的采样网格增长。对 generic 2D 积分，当前做法是在 radial 方向用 Adaptive Levin，在 $\zeta$ 方向用 Clenshaw Curtis。
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin 流程</div>
@@ -315,25 +315,25 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
     <div class="isem-flow__box"><strong>预计算轨道数据</strong><span>批量复用 geodesic sample 和相位信息</span></div>
     <div class="isem-flow__box"><strong>识别 tail mode</strong><span>大的径向谐波或困难的 generic $(n,k)$ 行</span></div>
     <div class="isem-flow__box"><strong>径向自适应</strong><span>高 $n$ 振荡主要在 radial 方向</span></div>
-    <div class="isem-flow__box"><strong>theta CC</strong><span>generic 2D 积分中使用固定 polar Clenshaw-Curtis 节点</span></div>
+    <div class="isem-flow__box"><strong>theta CC</strong><span>generic 2D 积分中使用固定 polar Clenshaw Curtis 节点</span></div>
     <div class="isem-flow__box"><strong>记录元数据</strong><span>segments、depth、stop reason 和 effective intervals</span></div>
   </div>
 </div>
 
-效果很直接：困难的高 $n$ 积分不再需要和简单 mode 使用同一套 brute-force sampling。Radial Adaptive Levin 加固定 $\zeta$ 方向的 Clenshaw-Curtis，可以控制高频径向振荡，同时在 generic orbit 的二维积分里保留稳定的张量积结构。
+效果很直接：困难的高 $n$ 积分不再需要和简单 mode 使用同一套强行加密采样。Radial Adaptive Levin 加固定 $\zeta$ 方向的 Clenshaw Curtis，可以控制高频径向振荡，同时在 generic orbit 的二维积分里保留稳定的张量积结构。
 
 <div class="isem-metric">
   <div class="isem-metric__item">
     <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">generic 2D convolution integral 测试中 stratified 1000-row sample 的 post-warm median</span>
+    <span class="isem-metric__label">generic 2D convolution integral 测试中 stratified 1000 row sample 的 post warm median</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">focused 100-row generic high-$n$ check 中报告的 p95</span>
+    <span class="isem-metric__label">focused 100 row generic high $n$ check 中报告的 p95</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">&lt;5 ms</span>
-    <span class="isem-metric__label">有代表性的 warmed eccentric single-mode 检查可以低于这个量级</span>
+    <span class="isem-metric__label">有代表性的 warmed eccentric single mode 检查可以低于这个量级</span>
   </div>
 </div>
 
