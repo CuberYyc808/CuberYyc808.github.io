@@ -27,7 +27,7 @@ Email: cuber.ycyin@gmail.com
   border-top: 1px solid #d8dee4;
 }
 .news-date {
-  color: #6e7781;
+  color: var(--global-text-color-light);
   font-size: 0.86rem;
   font-weight: 600;
 }
@@ -37,7 +37,7 @@ Email: cuber.ycyin@gmail.com
 }
 .news-item p {
   margin: 0;
-  color: #57606a;
+  color: var(--global-text-color-light);
   font-size: 0.92rem;
   line-height: 1.45;
 }

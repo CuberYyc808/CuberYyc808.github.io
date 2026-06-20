@@ -7,7 +7,7 @@ lang: zh
 lang_switch_url: /research/sasaki-nakamura-waveforms/
 ---
 
-<div style="color:#57606a;font-size:0.9rem;margin-bottom:1rem;">
+<div style="color:var(--global-text-color-light);font-size:0.9rem;margin-bottom:1rem;">
 无穷远处的波形与能流 · <a href="https://arxiv.org/abs/2511.08673">arXiv:2511.08673</a>
 </div>
 

@@ -7,7 +7,7 @@ lang: zh
 lang_switch_url: /research/near-horizon-kerr-perturbations/
 ---
 
-<div style="color:#57606a;font-size:0.9rem;margin-bottom:1rem;">
+<div style="color:var(--global-text-color-light);font-size:0.9rem;margin-bottom:1rem;">
 旋转黑洞的线性引力微扰 · <a href="https://arxiv.org/abs/2512.07937">arXiv:2512.07937</a>
 </div>
 

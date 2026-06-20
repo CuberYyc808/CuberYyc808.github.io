@@ -22,7 +22,7 @@ lang_switch_url: /research/
 .research-card {
   border: 1px solid #d8dee4;
   border-radius: 8px;
-  background: #fff;
+  background: var(--global-bg-color);
   overflow: hidden;
 }
 .research-card a {
@@ -33,7 +33,7 @@ lang_switch_url: /research/
   height: 165px;
   object-fit: contain;
   display: block;
-  background: #f6f8fa;
+  background: var(--global-thead-color);
 }
 .research-card__body {
   padding: 0.9rem;
@@ -44,13 +44,13 @@ lang_switch_url: /research/
   margin: 0 0 0.4rem;
 }
 .research-card__body p {
-  color: #57606a;
+  color: var(--global-text-color-light);
   font-size: 0.88rem;
   line-height: 1.45;
   margin: 0 0 0.75rem;
 }
 .research-card__meta {
-  color: #6e7781;
+  color: var(--global-text-color-light);
   font-size: 0.78rem;
   margin-bottom: 0.45rem;
 }

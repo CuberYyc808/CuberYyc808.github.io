@@ -47,29 +47,6 @@ var toggleTheme = () => {
   setTheme(new_theme);
 };
 
-let currentPageLanguage = () => {
-  return $("html").attr("lang") === "zh" ? "zh" : "en";
-};
-
-let languageTarget = () => {
-  const target = $("#language-toggle a").attr("href");
-  return target || null;
-};
-
-var toggleLanguage = (event) => {
-  if (event) {
-    event.preventDefault();
-  }
-
-  const newLanguage = currentPageLanguage() === "zh" ? "en" : "zh";
-  localStorage.setItem("language", newLanguage);
-
-  const target = languageTarget();
-  if (target) {
-    window.location.href = target;
-  }
-};
-
 /* ==========================================================================
    Plotly integration script so that Markdown codeblocks will be rendered
    ========================================================================== */
@@ -124,9 +101,6 @@ $(document).ready(function () {
 
   // Enable the theme toggle
   $('#theme-toggle').on('click', toggleTheme);
-
-  // Enable language toggle. The default entry remains English unless the user clicks Chinese.
-  $('#language-toggle').on('click', toggleLanguage);
 
   // Enable the sticky footer
   var bumpIt = function () {

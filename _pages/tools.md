@@ -22,7 +22,7 @@ lang_switch_url: /zh/tools/
 .tool-card {
   border: 1px solid #d8dee4;
   border-radius: 8px;
-  background: #fff;
+  background: var(--global-bg-color);
   padding: 1.15rem;
   display: flex;
   flex-direction: column;
@@ -45,7 +45,7 @@ lang_switch_url: /zh/tools/
   object-fit: contain;
   border: 1px solid #d8dee4;
   border-radius: 8px;
-  background: #f6f8fa;
+  background: var(--global-thead-color);
 }
 .tool-card h2 {
   font-size: 1.12rem;
@@ -54,12 +54,12 @@ lang_switch_url: /zh/tools/
   overflow-wrap: anywhere;
 }
 .tool-card__tag {
-  color: #6e7781;
+  color: var(--global-text-color-light);
   font-size: 0.8rem;
   margin-top: 0.2rem;
 }
 .tool-card p {
-  color: #57606a;
+  color: var(--global-text-color-light);
   font-size: 0.92rem;
   line-height: 1.45;
   margin: 0 0 0.75rem;

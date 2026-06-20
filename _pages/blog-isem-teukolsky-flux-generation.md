@@ -9,7 +9,7 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
 
 <style>
 .isem-note {
-  color: #57606a;
+  color: var(--global-text-color-light);
   font-size: 0.95rem;
   line-height: 1.55;
   margin: -0.3rem 0 1.2rem;
@@ -26,11 +26,11 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   padding: 0.75rem 0.85rem;
   text-decoration: none;
   font-weight: 600;
-  background: #fff;
+  background: var(--global-bg-color);
 }
 .isem-callout {
-  border-left: 4px solid #57606a;
-  background: #f6f8fa;
+  border-left: 4px solid var(--global-text-color-light);
+  background: var(--global-thead-color);
   padding: 0.85rem 1rem;
   margin: 1.2rem 0;
 }
@@ -41,8 +41,8 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin: 1.1rem 0 1.4rem;
 }
 .isem-step {
-  border-top: 3px solid #57606a;
-  background: #fff;
+  border-top: 3px solid var(--global-text-color-light);
+  background: var(--global-bg-color);
   padding: 0.8rem 0.9rem;
 }
 .isem-step strong {
@@ -51,7 +51,7 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
 }
 .isem-step p {
   margin: 0;
-  color: #57606a;
+  color: var(--global-text-color-light);
   font-size: 0.92rem;
   line-height: 1.5;
 }

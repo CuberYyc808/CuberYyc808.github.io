@@ -7,7 +7,7 @@ lang: zh
 lang_switch_url: /research/binary-emri-waveform-modeling/
 ---
 
-<div style="color:#57606a;font-size:0.9rem;margin-bottom:1rem;">
+<div style="color:var(--global-text-color-light);font-size:0.9rem;margin-bottom:1rem;">
 相对论三体系统与黑洞微扰理论 · <a href="https://arxiv.org/abs/2410.09796">arXiv:2410.09796</a>
 </div>
 
