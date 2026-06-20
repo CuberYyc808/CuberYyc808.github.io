@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Introducing ISEM: scalable Teukolsky flux generation for high-eccentricity EMRIs"
+title: "Beyond ISEM: a practical Teukolsky flux workflow for high-eccentricity EMRIs"
 permalink: /blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: en
@@ -10,9 +10,17 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
 <style>
 .isem-note {
   color: var(--global-text-color-light);
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.55;
   margin: -0.3rem 0 1.2rem;
+}
+.isem-kicker {
+  color: var(--global-text-color-light);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
 }
 .isem-links {
   display: grid;
@@ -21,12 +29,86 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   margin: 1.1rem 0 1.4rem;
 }
 .isem-links a {
-  border: 1px solid #d8dee4;
+  border: 1px solid var(--global-border-color);
   border-radius: 8px;
   padding: 0.75rem 0.85rem;
   text-decoration: none;
   font-weight: 600;
   background: var(--global-bg-color);
+}
+.isem-diagram {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-bg-color);
+  padding: 1rem;
+  margin: 1.2rem 0 1.4rem;
+}
+.isem-figure {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-bg-color);
+  margin: 1.2rem 0 1.5rem;
+  overflow: hidden;
+}
+.isem-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.isem-figure figcaption {
+  color: var(--global-text-color-light);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  padding: 0.65rem 0.85rem 0.8rem;
+}
+.isem-diagram__title {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.isem-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 0.65rem;
+  align-items: stretch;
+}
+.isem-flow__box {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-thead-color);
+  padding: 0.7rem 0.8rem;
+}
+.isem-flow__box strong {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 0.25rem;
+}
+.isem-flow__box span {
+  color: var(--global-text-color-light);
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.isem-compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0 1.4rem;
+}
+.isem-compare__panel {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-bg-color);
+  padding: 0.95rem;
+}
+.isem-compare__panel h3 {
+  font-size: 1rem;
+  margin: 0 0 0.55rem;
+}
+.isem-compare__panel p,
+.isem-compare__panel li {
+  color: var(--global-text-color-light);
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 .isem-callout {
   border-left: 4px solid var(--global-text-color-light);
@@ -55,13 +137,39 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   font-size: 0.92rem;
   line-height: 1.5;
 }
+.isem-metric {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.4rem;
+}
+.isem-metric__item {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-thead-color);
+  padding: 0.85rem;
+}
+.isem-metric__value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.isem-metric__label {
+  color: var(--global-text-color-light);
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  margin-top: 0.35rem;
+}
 </style>
 
-<p class="isem-note"><strong>A technical note on ISEM: not a paper by itself, but the machinery that makes large batches of Teukolsky flux calculations practical.</strong></p>
+<div class="isem-kicker">Technical blog</div>
+<p class="isem-note"><strong>ISEM is not the whole blog. ISEM, short for iterative series expansion matching, is a radial solver. The real story is how that radial layer is combined with shell-ordered mode summation and Adaptive Levin integration to make high-eccentricity flux production usable.</strong></p>
 
-In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. ISEM is meant for that less glamorous but very real problem: making frequency-domain Teukolsky flux production stable enough to run repeatedly.
+In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. So the useful question is not just "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
-The right way to think about it is as an infrastructure layer. It sits between radial equation solvers and the higher-level flux dataset machinery: below it are radial Teukolsky and generalized Sasaki-Nakamura solves; above it are mode summation, convergence checks, and waveform-infrastructure use cases. The current development branch is in [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM).
+That is the motivation for this note. ISEM itself is the radial-solver layer. Around it there is a mode-summation strategy and an Adaptive Levin strategy. Together they form the practical workflow I use for high-eccentricity and generic Teukolsky flux generation. I am not presenting this as a standalone paper right now; the more useful role is as technical infrastructure that can feed into larger LISA waveform work.
 
 <div class="isem-links">
   <a href="{{ '/tools/' | relative_url }}">Tools overview</a>
@@ -70,47 +178,130 @@ The right way to think about it is as an infrastructure layer. It sits between r
   <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">AdaptiveLevin.jl</a>
 </div>
 
-## What ISEM handles
-
-In the frequency domain, Teukolsky fluxes are built mode by mode. One mode is manageable. A dataset is not. ISEM is mainly about organizing three pieces:
-
-<div class="isem-steps">
-  <div class="isem-step">
-    <strong>Radial solves</strong>
-    <p>Common handling for the radial Teukolsky equation and the generalized Sasaki-Nakamura equation, including homogeneous solutions, matching, and transformations.</p>
-  </div>
-  <div class="isem-step">
-    <strong>Source integrals</strong>
-    <p>Point-particle sources in a form that can be called repeatedly, with Adaptive Levin integration available for strongly oscillatory cases.</p>
-  </div>
-  <div class="isem-step">
-    <strong>Mode summation</strong>
-    <p>Shell-aware bookkeeping, so convergence is monitored by structure rather than by a single rectangular cutoff.</p>
+<div class="isem-diagram">
+  <div class="isem-diagram__title">Workflow in one line</div>
+  <div class="isem-flow">
+    <div class="isem-flow__box"><strong>Kerr orbit</strong><span>frequencies, phases, turning points</span></div>
+    <div class="isem-flow__box"><strong>Radial solver</strong><span>ISEM / Teukolsky / GSN homogeneous solutions</span></div>
+    <div class="isem-flow__box"><strong>Source integral</strong><span>trapezoidal or Adaptive Levin depending on the tail</span></div>
+    <div class="isem-flow__box"><strong>Mode shells</strong><span>&ell;, m, k grouped outside; n monitored as radial tail</span></div>
+    <div class="isem-flow__box"><strong>Flux dataset</strong><span>infinity and horizon branches with recorded convergence metadata</span></div>
   </div>
 </div>
 
-## Why the `Y` function matters
+## Motivation: why this is worth doing
 
-One useful cleanup in the ISEM branch is to make the new `Y` function an explicit interface. The point is not notation for its own sake. It gives the radial Teukolsky side, the GSN side, and the source/flux side a common variable convention.
+For LISA, Taiji, TianQin and other EMRI programs, zero-PA flux generation is a production problem. Frequency-domain Teukolsky calculations are accurate and modular, but high-eccentricity and generic Kerr orbits spread power across many harmonics. Once the mode sum becomes large, a naive "just make the rectangular grid bigger" approach is not a satisfying workflow.
 
-The definition and normalization of `Y` should be read together with two related PRD projects:
+The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to brute-force.
 
-- [Sasaki-Nakamura waveforms]({{ '/research/sasaki-nakamura-waveforms/' | relative_url }}), where the focus is the infinity-side waveform and flux.
-- [Near-horizon Kerr perturbations]({{ '/research/near-horizon-kerr-perturbations/' | relative_url }}), where the focus is the horizon-side shear perturbation and flux.
+## ISEM: the radial-solver layer
 
-Putting these conventions into one implementation should make later validation much less painful.
+ISEM means iterative series expansion matching. It is the radial-solver part, not the mode-summation method and not the source-integral method. It provides a first-class radial construction path for Teukolsky/GSN calculations, with matching, transformations, and the `Y` radial interface organized so the source side can call the same conventions repeatedly.
 
-## Why not just sum everything
+This matters because the radial solve sits inside every mode calculation. If the radial layer is unstable, the rest of the pipeline is fragile. If the radial layer is reusable, source construction and flux summation can be written as a production workflow rather than as a collection of one-off scripts.
 
-For high-eccentricity or generic Kerr orbits, the mode spectrum spreads out. A rectangular cutoff is easy to write down, but it often hides what is actually happening: some parts of the spectrum matter, many do not, and the tail behavior is what determines whether the final flux is trustworthy.
+<figure class="isem-figure">
+  <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Animated illustration of iterative series expansion matching for radial Teukolsky solutions">
+  <figcaption>ISEM as a radial construction idea: local series information is propagated and matched so the physical radial branches can be built with consistent horizon and infinity behavior. This is the radial layer that the flux workflow calls repeatedly.</figcaption>
+</figure>
 
-ISEM is organized around shell-aware summation. That makes it easier to see how contributions fall off and where truncation error is coming from. For production runs, this is just as important as being able to compute any single mode.
+<div class="isem-steps">
+  <div class="isem-step">
+    <strong>Homogeneous solutions</strong>
+    <p>Construct radial Teukolsky/GSN solutions with consistent boundary and normalization conventions.</p>
+  </div>
+  <div class="isem-step">
+    <strong>Y interface</strong>
+    <p>Expose a shared radial variable convention for source construction and flux evaluation.</p>
+  </div>
+  <div class="isem-step">
+    <strong>Fallback behavior</strong>
+    <p>Keep automatic fallback paths for cases where a specific radial construction is not the best choice.</p>
+  </div>
+</div>
 
-## Current status
+## The important change: how the mode sum is ordered
 
-Version `0.9.0` is not the finish line. It is the point where the skeleton is useful: radial solvers, source integrals, and mode bookkeeping are beginning to live in one workflow.
+For eccentric equatorial orbits the radial index `n` is the natural tail coordinate. For generic orbits there is also a polar index `k`, but the same lesson remains: high eccentricity shows up very clearly in the radial harmonic tail. If `n` is buried inside a rectangular grid, truncation is harder to interpret.
 
-The next important step is validation: comparing against existing Teukolsky and Sasaki-Nakamura calculations, checking infinity and horizon fluxes, and understanding convergence across different orbit families.
+The older mental model is:
+
+<div class="isem-compare">
+  <div class="isem-compare__panel">
+    <h3>Rectangular-grid mindset</h3>
+    <ul>
+      <li>First enlarge the radial/polar block: `n`, then `k`.</li>
+      <li>Then enlarge azimuthal and angular content: `m`, then `\ell`.</li>
+      <li>Easy to implement, but the radial tail is mixed into the whole rectangle.</li>
+    </ul>
+  </div>
+  <div class="isem-compare__panel">
+    <h3>Production workflow mindset</h3>
+    <ul>
+      <li>Reverse the practical control order: `\ell`, then `m`, then `k`.</li>
+      <li>Leave `n` last, as the radial tail direction to monitor.</li>
+      <li>For high eccentricity, the stopping point becomes visible as an `n`-shell decision.</li>
+    </ul>
+  </div>
+</div>
+
+This is not really an ISEM claim. It is a mode-summation claim. The benefit is conceptual and practical: once `n` is treated as the radial tail coordinate, the code can report where the infinity and horizon branches reached, what the last shell contributed, and whether the user should increase `nmax`. In a high-eccentricity run, that is exactly the diagnostic you want. You can literally see whether the radial tail is dead or still alive.
+
+<div class="isem-diagram">
+  <div class="isem-diagram__title">Mode-summation flow</div>
+  <div class="isem-flow">
+    <div class="isem-flow__box"><strong>Select &ell; shell</strong><span>angular resolution layer</span></div>
+    <div class="isem-flow__box"><strong>Select m branch</strong><span>azimuthal structure and frequency sign</span></div>
+    <div class="isem-flow__box"><strong>Select k shell</strong><span>polar harmonic structure for generic orbits</span></div>
+    <div class="isem-flow__box"><strong>Scan n tail</strong><span>radial harmonic tail; high-eccentricity truncation is visible here</span></div>
+    <div class="isem-flow__box"><strong>Latch method</strong><span>switch tail modes to Adaptive Levin when oscillations dominate</span></div>
+  </div>
+</div>
+
+In local benchmark notes, a grouped mode ordering was the fastest tested trapezoidal-SIMD path for one 10,000-mode generic high-e manifest. The blog-level takeaway is broader than that exact file name: group slow-changing structure, keep tail diagnostics explicit, and do not let a four-dimensional rectangle hide convergence. The user-facing workflow is therefore `\ell -> m -> k -> n`: angular structure first, radial tail last.
+
+## Adaptive Levin: use the right tool for the tail
+
+The second piece is Adaptive Levin integration. For high-eccentricity modes, especially large `n`, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase.
+
+Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy. That is why it is a natural tail method: use simpler rules when the mode is easy; switch when the high-frequency source structure appears. In large batches, the other important point is reuse: orbit samples, phase data, workspaces, and branch metadata should not be rebuilt from scratch for every single mode.
+
+<div class="isem-diagram">
+  <div class="isem-diagram__title">Adaptive Levin flow</div>
+  <div class="isem-flow">
+    <div class="isem-flow__box"><strong>Precompute orbit data</strong><span>reuse geodesic samples and phase information across batches</span></div>
+    <div class="isem-flow__box"><strong>Detect tail mode</strong><span>large radial harmonic or difficult generic `(n,k)` row</span></div>
+    <div class="isem-flow__box"><strong>Refine radially</strong><span>the high-`n` oscillation is mainly radial</span></div>
+    <div class="isem-flow__box"><strong>Use theta CC</strong><span>fixed polar Clenshaw-Curtis nodes for generic 2D integrals</span></div>
+    <div class="isem-flow__box"><strong>Record metadata</strong><span>segments, depth, stop reason, and effective intervals</span></div>
+  </div>
+</div>
+
+The current generic high-e recommendation from local tests is radial adaptive Levin plus fixed theta Clenshaw-Curtis. With a conservative `17x17` local grid, the benchmark summary reports a post-warm median of `8.925 ms` on a stratified 1000-row sample; focused low/high-`n` 100-row checks are around the same scale, with high-`n` p95 reported at `16.531 ms`. For representative eccentric single-mode checks, warmed low-mode timings are already well below the `5 ms` scale; for harder eccentric tail batches, repeated-run timings in the cache-reuse benchmark are several-to-tens of milliseconds per mode across sampled orbits.
+
+Those numbers are not a paper-level universal claim; they are engineering benchmarks for the current open-source path. They explain why this workflow is worth trying. For the cases it is designed for, the single-mode source integral is no longer the hopeless bottleneck it used to look like, and the generic 2D path is already operating around the 10 ms scale in the best current route.
+
+<div class="isem-metric">
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">8.925 ms</span>
+    <span class="isem-metric__label">post-warm median for generic 2D non-Y convolution, stratified 1000-row benchmark</span>
+  </div>
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">16.531 ms</span>
+    <span class="isem-metric__label">reported high-`n` p95 in focused 100-row generic check</span>
+  </div>
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">&lt;5 ms</span>
+    <span class="isem-metric__label">representative warmed eccentric single-mode checks can fall below this scale</span>
+  </div>
+</div>
+
+## How it fits into LISA waveform infrastructure
+
+This is why I do not want to isolate the method as a small independent story too early. The useful object is the workflow: Kerr geodesics produce the orbital structure; ISEM supplies radial solutions; source integrals are evaluated with a tail-aware quadrature strategy; mode summation records where convergence actually happens.
+
+That is also the right level for LISA waveform infrastructure. Flux production needs to be explainable, repeatable, and easy to validate. The current implementation is meant to be tried, stressed, and connected to larger waveform-generation pipelines.
 
 ## Related software and modules
 
@@ -120,5 +311,5 @@ The next important step is validation: comparing against existing Teukolsky and 
 - [Tools overview]({{ '/tools/' | relative_url }}): homepage entry point for the software modules.
 
 <div class="isem-callout">
-  <strong>Short version.</strong> ISEM is a workflow for connecting radial solves, source integrals, and mode summation into Teukolsky flux production.
+  <strong>Try it and break it.</strong> The point of making this public as a blog is to invite use and criticism before it becomes locked into a larger waveform-production article.
 </div>

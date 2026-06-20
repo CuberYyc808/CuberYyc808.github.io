@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "介绍 ISEM：面向高偏心率 EMRI 的可扩展 Teukolsky 能流生成"
+title: "不只是 ISEM：面向高偏心率 EMRI 的 Teukolsky 能流生成流程"
 permalink: /zh/blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: zh
@@ -10,9 +10,17 @@ lang_switch_url: /blog/isem-teukolsky-flux-generation/
 <style>
 .isem-note {
   color: var(--global-text-color-light);
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.55;
   margin: -0.3rem 0 1.2rem;
+}
+.isem-kicker {
+  color: var(--global-text-color-light);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
 }
 .isem-links {
   display: grid;
@@ -21,12 +29,86 @@ lang_switch_url: /blog/isem-teukolsky-flux-generation/
   margin: 1.1rem 0 1.4rem;
 }
 .isem-links a {
-  border: 1px solid #d8dee4;
+  border: 1px solid var(--global-border-color);
   border-radius: 8px;
   padding: 0.75rem 0.85rem;
   text-decoration: none;
   font-weight: 600;
   background: var(--global-bg-color);
+}
+.isem-diagram {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-bg-color);
+  padding: 1rem;
+  margin: 1.2rem 0 1.4rem;
+}
+.isem-figure {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-bg-color);
+  margin: 1.2rem 0 1.5rem;
+  overflow: hidden;
+}
+.isem-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.isem-figure figcaption {
+  color: var(--global-text-color-light);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  padding: 0.65rem 0.85rem 0.8rem;
+}
+.isem-diagram__title {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.isem-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 0.65rem;
+  align-items: stretch;
+}
+.isem-flow__box {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-thead-color);
+  padding: 0.7rem 0.8rem;
+}
+.isem-flow__box strong {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 0.25rem;
+}
+.isem-flow__box span {
+  color: var(--global-text-color-light);
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.isem-compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0 1.4rem;
+}
+.isem-compare__panel {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-bg-color);
+  padding: 0.95rem;
+}
+.isem-compare__panel h3 {
+  font-size: 1rem;
+  margin: 0 0 0.55rem;
+}
+.isem-compare__panel p,
+.isem-compare__panel li {
+  color: var(--global-text-color-light);
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 .isem-callout {
   border-left: 4px solid var(--global-text-color-light);
@@ -55,13 +137,39 @@ lang_switch_url: /blog/isem-teukolsky-flux-generation/
   font-size: 0.92rem;
   line-height: 1.5;
 }
+.isem-metric {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.4rem;
+}
+.isem-metric__item {
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  background: var(--global-thead-color);
+  padding: 0.85rem;
+}
+.isem-metric__value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.isem-metric__label {
+  color: var(--global-text-color-light);
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  margin-top: 0.35rem;
+}
 </style>
 
-<p class="isem-note"><strong>这是一个给 ISEM 留的技术说明：它不是一篇论文，而是一套把 Teukolsky flux 批量算起来的基础设施。</strong></p>
+<div class="isem-kicker">技术博客</div>
+<p class="isem-note"><strong>ISEM 不是这篇 blog 的全部。ISEM，也就是 iterative series expansion matching，只是 radial solver 的一种方法。真正值得讲的是：这个径向层怎么和 shell-ordered mode summation、Adaptive Levin 积分合在一起，让高偏心率 flux production 变得可用。</strong></p>
 
-做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道、甚至接近比较极端的区域。ISEM 想解决的就是这个很工程、但又很关键的问题：怎样把 frequency-domain Teukolsky flux 稳定地、大批量地算出来。
+做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
 
-所以这里不会把它包装成一个单独的“故事”。更准确地说，ISEM 是一层 infrastructure：下面接 radial equation solver，上面接 mode summation 和 flux dataset generation。它目前放在 [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM) 的 ISEM branch 里。
+这就是这篇 blog 想讲的东西。ISEM 本身是 radial-solver layer；围绕它还有 mode summation 的组织方式和 Adaptive Levin 的尾部积分策略。三者合在一起，才是现在用于高偏心率和 generic Teukolsky flux generation 的实用 workflow。它现在不作为一篇独立论文来包装，更合适的位置是作为未来 LISA waveform infrastructure 可以使用的技术基础设施。
 
 <div class="isem-links">
   <a href="{{ '/zh/tools/' | relative_url }}">工具总览</a>
@@ -70,47 +178,130 @@ lang_switch_url: /blog/isem-teukolsky-flux-generation/
   <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">AdaptiveLevin.jl</a>
 </div>
 
-## 它到底在管什么
-
-在 frequency domain 里，Teukolsky flux 是按 mode 算的。一个 mode 看起来还好，但真正做 dataset 的时候，问题会迅速变成一个“很多很多 mode 怎么组织”的问题。ISEM 目前主要管三件事：
-
-<div class="isem-steps">
-  <div class="isem-step">
-    <strong>Radial solves</strong>
-    <p>统一处理 radial Teukolsky equation 和 generalized Sasaki-Nakamura equation 的齐次解、匹配和变量变换。</p>
-  </div>
-  <div class="isem-step">
-    <strong>Source integrals</strong>
-    <p>把 point-particle source 写成适合反复调用的形式；遇到强振荡积分时接 Adaptive Levin。</p>
-  </div>
-  <div class="isem-step">
-    <strong>Mode summation</strong>
-    <p>不把所有 index 粗暴塞进一个大矩形，而是按 shell 去看收敛和尾部贡献。</p>
+<div class="isem-diagram">
+  <div class="isem-diagram__title">一句话流程图</div>
+  <div class="isem-flow">
+    <div class="isem-flow__box"><strong>Kerr 轨道</strong><span>频率、相位、转向点</span></div>
+    <div class="isem-flow__box"><strong>径向求解</strong><span>ISEM / Teukolsky / GSN 齐次解</span></div>
+    <div class="isem-flow__box"><strong>源项积分</strong><span>普通积分或尾部 Adaptive Levin</span></div>
+    <div class="isem-flow__box"><strong>Mode shells</strong><span>外层按 &ell;、m、k 组织；n 作为径向尾部监控</span></div>
+    <div class="isem-flow__box"><strong>Flux dataset</strong><span>无穷远与视界分支，并记录收敛信息</span></div>
   </div>
 </div>
 
-## `Y` 函数为什么单独拿出来
+## Motivation：为什么要这么做
 
-这次整理 ISEM 的一个重点，是把新的 `Y` function 作为统一接口放进来。它不是为了多造一个记号，而是为了让不同形式之间的转换更干净：radial Teukolsky side、GSN side、以及最后用于 source / flux 的组合，都可以用同一套约定来对齐。
+对 LISA、太极、天琴以及相关 EMRI 项目来说，zero-PA flux generation 不是一个小脚本问题，而是一个生产问题。频域 Teukolsky 计算的优点是精确、模块化；问题是高偏心率和 generic Kerr 轨道会把能量铺到很多谐波上。mode sum 一大，单纯把 rectangular grid 继续放大就不是一个很好的 workflow 了。
 
-`Y` 的定义和 normalization 可以和两篇文章一起看：
+我们真正关心的不只是“某一个 mode 算得快不快”，而是：哪些区域还在贡献？哪些区域已经是 tail？哪个区域该换成更适合高振荡的积分器？这就是当前实现和普通矩形循环的区别：mode sum 不是一个盲目放大的循环，而是一个需要被诊断、被记录、被控制的对象。
 
-- [Sasaki-Nakamura waveforms]({{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }})：主要关心 infinity side 的 waveform 和 flux。
-- [Near-horizon Kerr perturbations]({{ '/zh/research/near-horizon-kerr-perturbations/' | relative_url }})：主要关心 horizon side 的 shear perturbation 和 flux。
+## ISEM：径向求解层
 
-把这两边的约定统一起来，后面做 flux production 会省很多麻烦，也更容易做交叉验证。
+ISEM 是 iterative series expansion matching，是 radial solver 这一层。它不是 mode summation 方法，也不是 source integral 方法。它把 Teukolsky / GSN 的径向齐次解、matching、变量变换和 `Y` radial interface 放在同一套约定下，让 source construction 和 flux evaluation 可以反复调用。
 
-## 为什么不直接暴力求和
+这一层很重要，因为每一个 mode 都要碰到 radial solve。径向层不稳定，整个 pipeline 就会很脆；径向层如果可复用，上面的源项积分和 mode summation 就可以写成真正的 production workflow，而不是一堆临时脚本。
 
-对高偏心率或者 generic Kerr orbit 来说，mode spectrum 会铺得很开。直接给每个 index 设一个 cutoff 当然能跑，但很容易出现两个问题：一是算了很多贡献很小的 mode；二是你不太清楚误差是从哪里来的。
+<figure class="isem-figure">
+  <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Iterative series expansion matching for radial Teukolsky solutions">
+  <figcaption>ISEM 的径向构造思想：局部级数信息向外传播，并在匹配点把不同物理解分支接起来，从而得到具有一致视界和无穷远行为的径向解。Flux workflow 反复调用的就是这一层。</figcaption>
+</figure>
 
-ISEM 里更自然的做法是按 shell 去组织 mode summation。这样可以一层一层看 flux contribution 怎么掉下去，也能更直接地判断 tail 有没有被控制住。这个结构对后面做大规模 dataset 很重要，因为我们关心的不只是“这个点算出来了”，还关心“这个点算得是不是可控”。
+<div class="isem-steps">
+  <div class="isem-step">
+    <strong>齐次解</strong>
+    <p>统一构造 radial Teukolsky / GSN 解，并保持边界条件和归一化约定一致。</p>
+  </div>
+  <div class="isem-step">
+    <strong>Y interface</strong>
+    <p>给源项构造和 flux evaluation 提供同一套径向变量约定。</p>
+  </div>
+  <div class="isem-step">
+    <strong>Fallback</strong>
+    <p>当某些径向构造不是最优选择时，保留自动回退路径。</p>
+  </div>
+</div>
 
-## 现在的状态
+## 真正关键的变化：mode sum 怎么加
 
-目前这套东西还在快速整理。`0.9.0` 的意义不是“终于完成了”，而是 GSN 里已经有了一个可以继续往 flux pipeline 推的 ISEM skeleton：radial solver、source integral、mode bookkeeping 都开始连起来了。
+对 eccentric equatorial orbit 来说，径向指标 `n` 是最自然的 tail coordinate。对 generic orbit 还会多一个极向指标 `k`，但核心问题类似：高偏心率最清楚地体现在 radial harmonic tail 上。如果把 `n` 混在一个大 rectangular grid 里，截断就不够透明。
 
-下一步更重要的是 validation：和已有 Teukolsky / Sasaki-Nakamura 结果对比，检查 infinity flux、horizon flux、以及不同 orbit 区域下的收敛表现。做完这些，ISEM 才真正适合进入更大的 EMRI waveform infrastructure。
+以前很自然的想法是：
+
+<div class="isem-compare">
+  <div class="isem-compare__panel">
+    <h3>Rectangular grid 思路</h3>
+    <ul>
+      <li>先把径向/极向 block 放大：先 `n`，再 `k`。</li>
+      <li>再扩展方位角和角向结构：再 `m`，最后 `\ell`。</li>
+      <li>实现很直接，但 radial tail 被混进了整个矩形里。</li>
+    </ul>
+  </div>
+  <div class="isem-compare__panel">
+    <h3>Production workflow 思路</h3>
+    <ul>
+      <li>实际控制顺序反过来：先 `\ell`，再 `m`，再 `k`。</li>
+      <li>把 `n` 留到最后，作为径向尾部单独监控。</li>
+      <li>高偏心率情况下，截断点会非常清楚地表现为一个 `n`-shell 判断。</li>
+    </ul>
+  </div>
+</div>
+
+这个其实和 ISEM 本身没那么直接。ISEM 是 radial solver；这里讲的是 mode summation 的组织方式。这样做的好处是很具体的：代码可以报告无穷远分支和视界分支分别跑到了哪个 `n`，最后一个 shell 贡献多大，是否应该手动增大 `nmax`。高偏心率时，这就是最有用的诊断。你能直接看出来 radial tail 到底死没死，而不是被四维矩形藏起来。
+
+<div class="isem-diagram">
+  <div class="isem-diagram__title">Mode summation 流程</div>
+  <div class="isem-flow">
+    <div class="isem-flow__box"><strong>选 &ell; shell</strong><span>角向分辨率层</span></div>
+    <div class="isem-flow__box"><strong>选 m branch</strong><span>方位角结构和频率符号</span></div>
+    <div class="isem-flow__box"><strong>选 k shell</strong><span>generic 轨道的极向谐波结构</span></div>
+    <div class="isem-flow__box"><strong>扫描 n tail</strong><span>径向谐波尾部；高偏心率截断在这里最清楚</span></div>
+    <div class="isem-flow__box"><strong>切换方法</strong><span>尾部强振荡 mode 切到 Adaptive Levin</span></div>
+  </div>
+</div>
+
+本地 benchmark notes 里，grouped mode ordering 是一个 10,000-mode generic high-e manifest 中测试到的最快 trapezoidal-SIMD 路径。blog 里真正想强调的不是某个文件名，而是这个原则：慢变量外层组织，尾部坐标清楚暴露，不要让四维矩形把收敛性藏起来。所以对外讲清楚的 workflow 就是 `\ell -> m -> k -> n`：先角向结构，最后径向尾部。
+
+## Adaptive Levin：尾部 mode 要用对积分器
+
+第二个核心是 Adaptive Levin。高偏心率 mode，尤其是大的 `n`，源项积分会出现很强的振荡。普通求积方法在这种情况下会把大量采样点花在“追相位”上。
+
+Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进积分策略里。这就是为什么它适合尾部 mode：简单 mode 用简单方法，真正出现高频振荡结构时再切换。在大批量计算里，另一个关键点是复用：轨道采样、相位数据、workspace、分支元数据，都不应该每个 mode 从零开始重建。
+
+<div class="isem-diagram">
+  <div class="isem-diagram__title">Adaptive Levin 流程</div>
+  <div class="isem-flow">
+    <div class="isem-flow__box"><strong>预计算轨道数据</strong><span>批量复用 geodesic sample 和相位信息</span></div>
+    <div class="isem-flow__box"><strong>识别 tail mode</strong><span>大的径向谐波或困难的 generic `(n,k)` 行</span></div>
+    <div class="isem-flow__box"><strong>径向自适应</strong><span>高 `n` 振荡主要在 radial 方向</span></div>
+    <div class="isem-flow__box"><strong>theta CC</strong><span>generic 2D 积分中使用固定 polar Clenshaw-Curtis 节点</span></div>
+    <div class="isem-flow__box"><strong>记录元数据</strong><span>segments、depth、stop reason 和 effective intervals</span></div>
+  </div>
+</div>
+
+当前 generic high-e 的本地推荐方案是 radial adaptive Levin + fixed theta Clenshaw-Curtis。保守的 `17x17` local grid 在 benchmark summary 里给出的 stratified 1000-row post-warm median 是 `8.925 ms`；低/高 `n` 的 100-row focused checks 也在同一量级，高 `n` p95 是 `16.531 ms`。对有代表性的 eccentric single-mode 检查，warm 之后的低阶 mode 已经可以低于 `5 ms` 这个量级；对更困难的 eccentric tail batch，cache-reuse benchmark 里的 repeated-run 时间大致是每个 mode 几毫秒到几十毫秒，取决于轨道和精度设置。
+
+这些数字不是论文级别的 universal claim，而是当前 open-source path 的工程 benchmark。它们说明为什么这套东西值得试：对目标场景来说，单个 source integral 不再是看起来完全不可承受的瓶颈；generic 2D 路径在当前最好的 route 里已经到了 10 ms 左右的尺度。
+
+<div class="isem-metric">
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">8.925 ms</span>
+    <span class="isem-metric__label">generic 2D non-Y convolution 的 stratified 1000-row post-warm median</span>
+  </div>
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">16.531 ms</span>
+    <span class="isem-metric__label">focused 100-row generic high-`n` check 中报告的 p95</span>
+  </div>
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">&lt;5 ms</span>
+    <span class="isem-metric__label">有代表性的 warmed eccentric single-mode 检查可以低于这个量级</span>
+  </div>
+</div>
+
+## 它怎么进入 LISA waveform infrastructure
+
+所以我不想太早把它单独包装成一个很小的独立故事。真正有用的是 workflow：Kerr geodesics 给出轨道结构；ISEM 给出径向解；source integral 用 tail-aware 的积分策略；mode summation 记录收敛到底发生在哪里。
+
+这个层级也更适合 LISA waveform infrastructure。Flux production 需要的是可解释、可重复、可验证。当前实现的目标就是让大家可以试用、压测，然后把它接到更大的 waveform-generation pipeline 里。
 
 ## 相关软件与模块
 
@@ -120,5 +311,5 @@ ISEM 里更自然的做法是按 shell 去组织 mode summation。这样可以�
 - [工具总览]({{ '/zh/tools/' | relative_url }})：主页上的相关软件入口。
 
 <div class="isem-callout">
-  <strong>一句话版本：</strong> ISEM 不是一个单独的物理结论，而是一套把 radial solves、source integrals 和 mode summation 串起来的 Teukolsky flux production workflow。
+  <strong>欢迎试用，也欢迎挑毛病。</strong> 这篇 blog 的意义就是先把方法公开出来，让它在进入更大的 waveform production article 之前被使用和检验。
 </div>
