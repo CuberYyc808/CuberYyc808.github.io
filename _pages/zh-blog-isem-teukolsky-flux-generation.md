@@ -199,7 +199,7 @@ window.MathJax = {
 
 做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不只是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
 
-这个 workflow 有三个部分。第一，径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。第二，mode sum 的组织方式要让径向谐波 $n$ 保持为最后的 tail direction，而不是被藏在一个 rectangular grid 里。第三，对高偏心率下强振荡的 source integral，使用 Adaptive Levin 积分。它现在不作为一篇独立论文来包装，更合适的位置是作为未来 LISA waveform infrastructure 可以使用的技术基础设施。
+这个 workflow 有三个部分。第一，径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。第二，mode sum 的组织方式要让径向谐波 $n$ 保持为最后的 tail direction，而不是被藏在一个 rectangular grid 里。第三，对高偏心率下强振荡的 source integral，使用 Adaptive Levin 积分。
 
 <div class="isem-links">
   <a href="{{ '/zh/tools/' | relative_url }}">工具总览</a>
@@ -310,7 +310,7 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
 
 当前 generic high-e 的本地推荐方案是 radial adaptive Levin + fixed theta Clenshaw-Curtis。保守的 $17\times17$ local grid 在 benchmark summary 里给出的 stratified 1000-row post-warm median 是 8.925 ms；低/高 $n$ 的 100-row focused checks 也在同一量级，高 $n$ p95 是 16.531 ms。对有代表性的 eccentric single-mode 检查，warm 之后的低阶 mode 已经可以低于 5 ms 这个量级；对更困难的 eccentric tail batch，cache-reuse benchmark 里的 repeated-run 时间大致是每个 mode 几毫秒到几十毫秒，取决于轨道和精度设置。
 
-这些数字不是论文级别的 universal claim，而是当前 open-source path 的工程 benchmark。它们说明为什么这套东西值得试：对目标场景来说，单个 source integral 不再是看起来完全不可承受的瓶颈；generic 2D 路径在当前最好的 route 里已经到了 10 ms 左右的尺度。
+这些数字是当前 open-source path 的工程 benchmark，不是通用性能保证。它们说明为什么这套东西值得试：对目标场景来说，单个 source integral 不再是看起来完全不可承受的瓶颈；generic 2D 路径在当前最好的 route 里已经到了 10 ms 左右的尺度。
 
 <div class="isem-metric">
   <div class="isem-metric__item">
@@ -327,12 +327,6 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
   </div>
 </div>
 
-## 它怎么进入 LISA waveform infrastructure
-
-所以我不想太早把它单独包装成一个很小的独立故事。真正有用的是 workflow：Kerr geodesics 给出轨道结构；ISEM 给出径向解；source integral 用 tail-aware 的积分策略；mode summation 记录收敛到底发生在哪里。
-
-这个层级也更适合 LISA waveform infrastructure。Flux production 需要的是可解释、可重复、可验证。当前实现的目标就是让大家可以试用、压测，然后把它接到更大的 waveform-generation pipeline 里。
-
 ## 相关软件与模块
 
 - [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM)：当前 ISEM 开发分支。
@@ -341,5 +335,5 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
 - [工具总览]({{ '/zh/tools/' | relative_url }})：主页上的相关软件入口。
 
 <div class="isem-callout">
-  <strong>欢迎试用，也欢迎挑毛病。</strong> 这篇 blog 的意义就是先把方法公开出来，让它在进入更大的 waveform production article 之前被使用和检验。
+  <strong>欢迎试用，也欢迎反馈。</strong> 相关代码和模块已经开放，欢迎测试和使用。
 </div>

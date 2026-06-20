@@ -199,7 +199,7 @@ window.MathJax = {
 
 In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
-The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where high-eccentricity source integrals become strongly oscillatory. I am not presenting this as a standalone paper right now; the more useful role is as technical infrastructure that can feed into larger LISA waveform work.
+The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where high-eccentricity source integrals become strongly oscillatory.
 
 <div class="isem-links">
   <a href="{{ '/tools/' | relative_url }}">Tools overview</a>
@@ -310,7 +310,7 @@ Adaptive Levin changes the problem. Instead of sampling the oscillation blindly,
 
 The current generic high-e recommendation from local tests is radial adaptive Levin plus fixed theta Clenshaw-Curtis. With a conservative $17\times17$ local grid, the benchmark summary reports a post-warm median of 8.925 ms on a stratified 1000-row sample; focused low/high-$n$ 100-row checks are around the same scale, with high-$n$ p95 reported at 16.531 ms. For representative eccentric single-mode checks, warmed low-mode timings are already well below the 5 ms scale; for harder eccentric tail batches, repeated-run timings in the cache-reuse benchmark are several-to-tens of milliseconds per mode across sampled orbits.
 
-Those numbers are not a paper-level universal claim; they are engineering benchmarks for the current open-source path. They explain why this workflow is worth trying. For the cases it is designed for, the single-mode source integral is no longer the hopeless bottleneck it used to look like, and the generic 2D path is already operating around the 10 ms scale in the best current route.
+Those numbers are engineering benchmarks, not a universal performance guarantee for the current open-source path. They explain why this workflow is worth trying. For the cases it is designed for, the single-mode source integral is no longer the hopeless bottleneck it used to look like, and the generic 2D path is already operating around the 10 ms scale in the best current route.
 
 <div class="isem-metric">
   <div class="isem-metric__item">
@@ -327,12 +327,6 @@ Those numbers are not a paper-level universal claim; they are engineering benchm
   </div>
 </div>
 
-## How it fits into LISA waveform infrastructure
-
-This is why I do not want to isolate the method as a small independent story too early. The useful object is the workflow: Kerr geodesics produce the orbital structure; ISEM supplies radial solutions; source integrals are evaluated with a tail-aware quadrature strategy; mode summation records where convergence actually happens.
-
-That is also the right level for LISA waveform infrastructure. Flux production needs to be explainable, repeatable, and easy to validate. The current implementation is meant to be tried, stressed, and connected to larger waveform-generation pipelines.
-
 ## Related software and modules
 
 - [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM): current ISEM development branch.
@@ -341,5 +335,5 @@ That is also the right level for LISA waveform infrastructure. Flux production n
 - [Tools overview]({{ '/tools/' | relative_url }}): homepage entry point for the software modules.
 
 <div class="isem-callout">
-  <strong>Try it and break it.</strong> The point of making this public as a blog is to invite use and criticism before it becomes locked into a larger waveform-production article.
+  <strong>Try it and send feedback.</strong> The code and related modules are open for testing and use.
 </div>
