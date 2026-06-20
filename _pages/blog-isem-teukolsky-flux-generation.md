@@ -307,7 +307,9 @@ The resulting workflow is therefore $\ell \to m \to k \to n$: angular structure 
 
 The third piece is Adaptive Levin integration. For eccentric modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one dimensional radial integrations, a standard sampling route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
 
-Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy and splits the interval into smaller adaptive segments. On each local segment, the working grid is small, typically $17\times17$ in the two dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$ for the Levin system on a segment, and the total cost scales with the number of accepted segments rather than with one globally inflated sampling grid. For generic two dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw Curtis quadrature in the $\zeta$ direction.
+The name has two parts. "Adaptive" means the interval is split automatically: easy regions stay coarse, while difficult oscillatory regions are cut into smaller pieces. "Levin" refers to the Levin method for highly oscillatory integrals. Instead of evaluating the oscillation by dense sampling, the method rewrites the integral as an auxiliary ODE system. After discretization, the ODE system becomes a small matrix problem on each segment. Combining these two ideas lets the code choose where to refine while still using the Levin formulation locally.
+
+Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy and splits the interval into smaller adaptive segments. On each local segment, the working grid is small, typically $17\times17$ in the two dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$ for the Levin system on a segment, and the total cost scales with the number of accepted segments rather than with one globally inflated sampling grid. For generic two dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw Curtis quadrature in the $\theta$ direction.
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin flow</div>
@@ -320,7 +322,7 @@ Adaptive Levin changes the problem. Instead of sampling the oscillation blindly,
   </div>
 </div>
 
-The effect is simple: the difficult high $n$ integrals no longer require the same brute force sampling strategy as the easy modes. Radial Adaptive Levin plus fixed $\zeta$ Clenshaw Curtis keeps the high frequency radial direction under control, while still using a stable tensor product structure for generic orbits.
+The effect is simple: the difficult high $n$ integrals no longer require the same brute force sampling strategy as the easy modes. Radial Adaptive Levin plus fixed $\theta$ direction Clenshaw Curtis keeps the high frequency radial direction under control, while still using a stable tensor product structure for generic orbits.
 
 <div class="isem-metric">
   <div class="isem-metric__item">
