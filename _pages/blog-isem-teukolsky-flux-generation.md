@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "A practical Teukolsky flux workflow for high-eccentricity EMRIs"
+title: "A practical adiabatic (0PA) flux workflow for high-eccentricity EMRIs"
 permalink: /blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: en
@@ -84,8 +84,8 @@ html[data-theme="dark"] {
 }
 .isem-flow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.45rem;
   align-items: stretch;
 }
 .isem-flow__box {
@@ -93,18 +93,28 @@ html[data-theme="dark"] {
   border-radius: 8px;
   background: var(--isem-surface-alt);
   color: var(--isem-text);
-  padding: 0.7rem 0.8rem;
+  padding: 0.58rem 0.62rem;
 }
 .isem-flow__box strong {
   display: block;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   margin-bottom: 0.25rem;
 }
 .isem-flow__box span {
   color: var(--isem-muted);
   display: block;
-  font-size: 0.82rem;
-  line-height: 1.4;
+  font-size: 0.73rem;
+  line-height: 1.32;
+}
+@media (max-width: 900px) {
+  .isem-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .isem-flow {
+    grid-template-columns: 1fr;
+  }
 }
 .isem-compare {
   display: grid;
