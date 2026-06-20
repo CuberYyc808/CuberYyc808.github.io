@@ -34,65 +34,91 @@ lang_switch_url: /zh/blog/isem-teukolsky-flux-generation/
   padding: 0.85rem 1rem;
   margin: 1.2rem 0;
 }
+.isem-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 0.8rem;
+  margin: 1.1rem 0 1.4rem;
+}
+.isem-step {
+  border-top: 3px solid #57606a;
+  background: #fff;
+  padding: 0.8rem 0.9rem;
+}
+.isem-step strong {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.isem-step p {
+  margin: 0;
+  color: #57606a;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
 </style>
 
-<p class="isem-note"><strong>A technical infrastructure note for large-scale frequency-domain EMRI flux production.</strong></p>
+<p class="isem-note"><strong>A technical note on ISEM: not a paper by itself, but the machinery that makes large batches of Teukolsky flux calculations practical.</strong></p>
 
-ISEM is a workflow for producing Teukolsky-based gravitational-wave fluxes for extreme-mass-ratio inspirals (EMRIs), especially when the orbit is highly eccentric or generic. The emphasis is practical: many waveform studies need repeated, reliable flux calculations across a large orbital parameter space, and the bottleneck is often not one spectacular calculation but the accumulation of many expensive mode computations.
+In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. ISEM is meant for that less glamorous but very real problem: making frequency-domain Teukolsky flux production stable enough to run repeatedly.
 
-This note introduces ISEM as technical infrastructure and method development. It is not being presented here as an independent paper. The current purpose is to make the work visible, explain the computational strategy, and keep the method available for broader LISA waveform infrastructure and related consortium workflows.
+The right way to think about it is as an infrastructure layer. It sits between radial equation solvers and the higher-level flux dataset machinery: below it are radial Teukolsky and generalized Sasaki-Nakamura solves; above it are mode summation, convergence checks, and waveform-infrastructure use cases. The current development branch is in [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM).
 
 <div class="isem-links">
   <a href="{{ '/tools/' | relative_url }}">Tools overview</a>
   <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura waveform work</a>
-  <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GeneralizedSasakiNakamura.jl</a>
+  <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GSN ISEM branch</a>
   <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">AdaptiveLevin.jl</a>
 </div>
 
-## Why flux generation matters
+## What ISEM handles
 
-Future space-based gravitational-wave missions such as LISA, Taiji, and TianQin will target long-duration signals from compact objects orbiting massive black holes. For EMRI modeling, fluxes are a basic ingredient: they control the slow inspiral of orbital constants and connect local orbital dynamics to observable gravitational radiation.
+In the frequency domain, Teukolsky fluxes are built mode by mode. One mode is manageable. A dataset is not. ISEM is mainly about organizing three pieces:
 
-Frequency-domain black-hole perturbation theory is attractive because it can deliver accurate fluxes mode by mode. In practice, however, waveform production requires these calculations to be repeated many times. A useful infrastructure layer must therefore be accurate, stable, and scalable enough for large batches rather than only individual benchmark orbits.
+<div class="isem-steps">
+  <div class="isem-step">
+    <strong>Radial solves</strong>
+    <p>Common handling for the radial Teukolsky equation and the generalized Sasaki-Nakamura equation, including homogeneous solutions, matching, and transformations.</p>
+  </div>
+  <div class="isem-step">
+    <strong>Source integrals</strong>
+    <p>Point-particle sources in a form that can be called repeatedly, with Adaptive Levin integration available for strongly oscillatory cases.</p>
+  </div>
+  <div class="isem-step">
+    <strong>Mode summation</strong>
+    <p>Shell-aware bookkeeping, so convergence is monitored by structure rather than by a single rectangular cutoff.</p>
+  </div>
+</div>
 
-## Why high-eccentricity and generic orbits are hard
+## Why the `Y` function matters
 
-For circular or mildly eccentric equatorial orbits, the mode content is relatively compact. High-eccentricity and generic Kerr orbits are different. Their radial and polar motion generates a much broader frequency spectrum, and the flux becomes a large sum over angular, azimuthal, radial, and polar mode labels.
+One useful cleanup in the ISEM branch is to make the new `Y` function an explicit interface. The point is not notation for its own sake. It gives the radial Teukolsky side, the GSN side, and the source/flux side a common variable convention.
 
-The naive approach is to view the flux as a rectangular sum over all mode indices up to fixed cutoffs. That is simple, but it can waste work and obscure convergence. The physically important question is not only whether each individual mode can be computed, but how the global mode sum is organized, monitored, and truncated.
+The definition and normalization of `Y` should be read together with two related PRD projects:
 
-## The ISEM radial-solver layer
+- [Sasaki-Nakamura waveforms]({{ '/research/sasaki-nakamura-waveforms/' | relative_url }}), where the focus is the infinity-side waveform and flux.
+- [Near-horizon Kerr perturbations]({{ '/research/near-horizon-kerr-perturbations/' | relative_url }}), where the focus is the horizon-side shear perturbation and flux.
 
-ISEM treats the radial Teukolsky calculation as a reusable solver layer. The goal is to produce stable homogeneous radial solutions, perform matching and transformations consistently, and construct source terms in a form suitable for repeated mode calculations.
+Putting these conventions into one implementation should make later validation much less painful.
 
-This layer is where much of the per-mode cost lives. Improving it matters because every point in parameter space can require many radial solves. A robust radial-solver interface also makes it easier to compare related formulations, connect to Sasaki-Nakamura style methods, and separate solver accuracy from higher-level summation logic.
+## Why not just sum everything
 
-## Shell-aware mode summation
+For high-eccentricity or generic Kerr orbits, the mode spectrum spreads out. A rectangular cutoff is easy to write down, but it often hides what is actually happening: some parts of the spectrum matter, many do not, and the tail behavior is what determines whether the final flux is trustworthy.
 
-For eccentric and generic orbits, ISEM organizes the mode sum using shell-aware structure rather than treating every index combination as an undifferentiated rectangular grid. The idea is to group and monitor physically meaningful shells of modes, so the computation can track how different parts of the spectrum contribute to the total flux.
+ISEM is organized around shell-aware summation. That makes it easier to see how contributions fall off and where truncation error is coming from. For production runs, this is just as important as being able to compute any single mode.
 
-This does not remove the need for convergence checks. It changes the bookkeeping so convergence can be assessed at the level where high-frequency tails and truncation errors become visible. That is especially useful when different orbital regions excite very different mode distributions.
+## Current status
 
-## Adaptive Levin integration for oscillatory source integrals
+Version `0.9.0` is not the finish line. It is the point where the skeleton is useful: radial solvers, source integrals, and mode bookkeeping are beginning to live in one workflow.
 
-High-eccentricity orbits can produce source integrals with strong oscillatory behavior, particularly at high radial harmonics. Standard quadrature can then spend a large amount of work resolving oscillations directly.
-
-ISEM connects this part of the workflow to adaptive Levin integration. The point is not to use a specialized method everywhere, but to switch to an oscillatory integration strategy where the source structure calls for it. In difficult high-frequency regimes, this can reduce wasted work while keeping the integral evaluation controlled.
-
-## How this fits into LISA waveform infrastructure
-
-The combined workflow has three layers. ISEM reduces the cost and fragility of each radial Teukolsky solve. Shell-aware summation controls the global cost of the mode sum. Adaptive Levin integration accelerates difficult individual source integrals. Together, these components form a practical route toward high-eccentricity and generic EMRI flux production.
-
-The current framing is intentionally infrastructural. The method is useful as part of a larger waveform-production stack, where flux generation, geodesic dynamics, source construction, and validation need to work together. Keeping this work in that context leaves room for it to support broader LISA Consortium Waveform Working Group efforts.
+The next important step is validation: comparing against existing Teukolsky and Sasaki-Nakamura calculations, checking infinity and horizon fluxes, and understanding convergence across different orbit families.
 
 ## Related software and modules
 
-- [GeneralizedSasakiNakamura.jl](https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl): Kerr perturbation tools connected to homogeneous solutions and source-driven waveform calculations.
+- [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM): current ISEM development branch.
 - [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl): bound Kerr geodesic infrastructure for orbital frequencies, phases, and trajectories.
 - [AdaptiveLevin.jl](https://github.com/CuberYyc808/AdaptiveLevin.jl): adaptive methods for highly oscillatory integrals.
 - [Tools overview]({{ '/tools/' | relative_url }}): homepage entry point for the software modules.
 
 <div class="isem-callout">
-  <strong>Status.</strong> ISEM is presented here as technical infrastructure and method development, not as an independently published paper.
+  <strong>Short version.</strong> ISEM is a workflow for connecting radial solves, source integrals, and mode summation into Teukolsky flux production.
 </div>
-

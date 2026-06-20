@@ -6,15 +6,75 @@ lang: zh
 lang_switch_url: /
 ---
 
-我目前是 [Niels Bohr Institute](https://www.nbi.ku.dk/english/) [Strong Group](https://strong-gr.com) 的 Visiting Fellow。此前就读于 [School of Physics, Peking University](https://www.phy.pku.edu.cn)，并于 2025 年 7 月获得学士学位。
+我现在在 [Niels Bohr Institute](https://www.nbi.ku.dk/english/) 的 [Strong Group](https://strong-gr.com) 做 Visiting Fellow。此前我在[北京大学物理学院](https://www.phy.pku.edu.cn)读本科，2025 年 7 月毕业。
 
-我的研究主要围绕黑洞微扰理论及其应用，包括不同引力波源的波形建模（如双黑洞、极端质量比旋近、双星极端质量比旋近）、黑洞准正规模，以及黑洞对引力波的散射。
+我主要做 black hole perturbation theory，以及它在 gravitational-wave modeling 里的应用。最近比较关心 EMRI / b-EMRI 波形、black-hole quasi-normal modes，以及黑洞对 gravitational waves 的散射。
 
 邮箱：cuber.ycyin@gmail.com
 
-## 新闻
+<style>
+.news-list {
+  margin-top: 1.2rem;
+}
+.news-item {
+  display: grid;
+  grid-template-columns: 7.2rem 1fr;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid #d8dee4;
+}
+.news-date {
+  color: #6e7781;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.news-item h3 {
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+.news-item p {
+  margin: 0;
+  color: #57606a;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+@media (max-width: 620px) {
+  .news-item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+</style>
 
-- **2026-06-20**：[GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM) `0.9.0` 更新，加入 ISEM 对 Teukolsky 点粒子能流模求和的支持。新的基础设施包含用于求解径向 Teukolsky 方程、广义 Sasaki-Nakamura 方程以及新定义的 `Y` 函数的 ISEM 方法；其中 `Y` 的约定与两篇相关 PRD 工作相互衔接，可参考 [Sasaki-Nakamura 波形]({{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}) 和[近视界 Kerr 微扰]({{ '/zh/research/near-horizon-kerr-perturbations/' | relative_url }})。
-- **2026-06-09**：[KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl) 更新至 `0.3.0`，现已支持 plunge 轨道。
-- **2026-04-27**：论文 *Gravitational Radiation from Kerr Black Holes using the Sasaki-Nakamura Formalism* 被 *Physical Review D* 接收。
-- **2026-03-10**：论文 *Near-Horizon Perturbations of Rotating Black Holes* 被 *Physical Review D* 接收。
+## Recent News
+
+<div class="news-list">
+  <div class="news-item">
+    <div class="news-date">2026 年 6 月</div>
+    <div>
+      <h3>GSN <code>0.9.0</code> 的 ISEM 分支基本就位。</h3>
+      <p><a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GeneralizedSasakiNakamura.jl</a> 里加入了 ISEM 相关的基础设施，用来做 Teukolsky point-particle flux 的 mode summation。这里面包括 radial Teukolsky equation、generalized Sasaki-Nakamura equation，以及新的 <code>Y</code> 变量约定；<code>Y</code> 的定义和用法可以和两篇 PRD 工作一起看：<a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura waveforms</a> 与 <a href="{{ '/zh/research/near-horizon-kerr-perturbations/' | relative_url }}">near-horizon Kerr perturbations</a>。</p>
+    </div>
+  </div>
+  <div class="news-item">
+    <div class="news-date">2026 年 6 月</div>
+    <div>
+      <h3>KerrGeodesics.jl <code>0.3.0</code> 支持 plunge orbits。</h3>
+      <p>除了 bound Kerr geodesics，现在也可以生成 plunge 轨道了，后面可以直接接到 waveform / flux pipeline 里。</p>
+    </div>
+  </div>
+  <div class="news-item">
+    <div class="news-date">2026 年 4 月</div>
+    <div>
+      <h3>Sasaki-Nakamura waveform 那篇被 PRD 接收。</h3>
+      <p>*Gravitational Radiation from Kerr Black Holes using the Sasaki-Nakamura Formalism* 于 2026 年 4 月 27 日被 *Physical Review D* 接收。</p>
+    </div>
+  </div>
+  <div class="news-item">
+    <div class="news-date">2026 年 3 月</div>
+    <div>
+      <h3>Near-horizon Kerr perturbation 那篇被 PRD 接收。</h3>
+      <p>*Near-Horizon Perturbations of Rotating Black Holes* 于 2026 年 3 月 10 日被 *Physical Review D* 接收。</p>
+    </div>
+  </div>
+</div>

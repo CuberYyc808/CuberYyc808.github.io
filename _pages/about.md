@@ -15,9 +15,69 @@ My research is mainly about black hole perturbation theory and its various appli
 
 Email: cuber.ycyin@gmail.com
 
-## News
+<style>
+.news-list {
+  margin-top: 1.2rem;
+}
+.news-item {
+  display: grid;
+  grid-template-columns: 7.2rem 1fr;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid #d8dee4;
+}
+.news-date {
+  color: #6e7781;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.news-item h3 {
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+.news-item p {
+  margin: 0;
+  color: #57606a;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+@media (max-width: 620px) {
+  .news-item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+</style>
 
-- **2026-06-20**: [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM) `0.9.0` was updated with ISEM support for Teukolsky point-particle flux mode summation. The new infrastructure introduces an ISEM method for solving the radial Teukolsky equation, the generalized Sasaki-Nakamura equation, and the newly defined `Y` function; the `Y` conventions are connected to the two related PRD works on [Sasaki-Nakamura waveforms]({{ '/research/sasaki-nakamura-waveforms/' | relative_url }}) and [near-horizon Kerr perturbations]({{ '/research/near-horizon-kerr-perturbations/' | relative_url }}).
-- **2026-06-09**: [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl) was updated to `0.3.0`, adding support for plunge orbits.
-- **2026-04-27**: *Gravitational Radiation from Kerr Black Holes using the Sasaki-Nakamura Formalism* was accepted by *Physical Review D*.
-- **2026-03-10**: *Near-Horizon Perturbations of Rotating Black Holes* was accepted by *Physical Review D*.
+## Recent News
+
+<div class="news-list">
+  <div class="news-item">
+    <div class="news-date">Jun 2026</div>
+    <div>
+      <h3>GSN <code>0.9.0</code> is getting the ISEM branch.</h3>
+      <p><a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GeneralizedSasakiNakamura.jl</a> now has ISEM machinery for Teukolsky point-particle flux mode summation: radial Teukolsky solves, generalized Sasaki-Nakamura solves, and a shared <code>Y</code> variable convention tied to the two PRD projects on <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura waveforms</a> and <a href="{{ '/research/near-horizon-kerr-perturbations/' | relative_url }}">near-horizon Kerr perturbations</a>.</p>
+    </div>
+  </div>
+  <div class="news-item">
+    <div class="news-date">Jun 2026</div>
+    <div>
+      <h3>KerrGeodesics.jl <code>0.3.0</code> supports plunge orbits.</h3>
+      <p>The package now goes beyond bound Kerr geodesics and can generate plunge trajectories for waveform and flux pipelines.</p>
+    </div>
+  </div>
+  <div class="news-item">
+    <div class="news-date">Apr 2026</div>
+    <div>
+      <h3>Our Sasaki-Nakamura waveform paper was accepted by PRD.</h3>
+      <p>*Gravitational Radiation from Kerr Black Holes using the Sasaki-Nakamura Formalism* was accepted by *Physical Review D* on April 27, 2026.</p>
+    </div>
+  </div>
+  <div class="news-item">
+    <div class="news-date">Mar 2026</div>
+    <div>
+      <h3>The near-horizon Kerr perturbation paper was accepted by PRD.</h3>
+      <p>*Near-Horizon Perturbations of Rotating Black Holes* was accepted by *Physical Review D* on March 10, 2026.</p>
+    </div>
+  </div>
+</div>
