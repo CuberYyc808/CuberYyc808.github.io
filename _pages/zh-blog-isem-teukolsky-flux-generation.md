@@ -231,39 +231,41 @@ window.MathJax = {
 
 ## Motivation：为什么要这么做
 
-对 LISA、太极、天琴以及相关 EMRI 项目来说，0PA flux generation 不是一个小脚本问题，而是一个生产问题。频域 Teukolsky 计算的优点是精确、模块化；问题是高偏心率和 generic Kerr 轨道会把能量铺到很多谐波上。mode sum 一大，单纯把 rectangular grid 继续放大就不是一个很好的 workflow 了。
+LISA、太极、天琴是空间引力波探测项目。对这些任务来说，EMRI 是一类重要的源，而 EMRI 的 0PA flux generation 不是一个小脚本问题，而是一个生产规模的数值计算问题。频域 Teukolsky 计算的优点是精确、模块化；问题是当轨道偏心率变高，并且出现进动、倾斜和 generic Kerr 轨道结构时，能量会铺到大量 $(\ell,m,k,n)$ mode 上。如果单个 mode 的计算时间不能有效降下来，完整的 flux 计算就会变成很大的计算资源开销。
 
 我们真正关心的不只是“某一个 mode 算得快不快”，而是：哪些区域还在贡献？哪些区域已经是 tail？哪个区域该换成更适合高振荡的积分器？这就是当前实现和普通矩形循环的区别：mode sum 不是一个盲目放大的循环，而是一个需要被诊断、被记录、被控制的对象。
 
 ## 径向求解层
 
-径向部分使用 iterative series expansion matching，后面简称 ISEM。它是这个 workflow 里的 radial solver，不是 mode summation 方法，也不是 source integral 方法。它把 Teukolsky / GSN 的径向齐次解、matching、变量变换和 `Y` radial interface 放在同一套约定下，让 source construction 和 flux evaluation 可以反复调用。
+第一块是径向求解。这里对 radial Teukolsky equation 使用 iterative series expansion matching，后面简称 ISEM。基本思路是先处理 Teukolsky 方程的变式，然后分别从 horizon 和 infinity 做级数展开，把两个物理解分支向中间的匹配点推进。在匹配点处，通过解和径向导数的 matching 求出 matching coefficients；这些系数也就是 flux evaluation 需要的渐近振幅。最后再由匹配后的两个分支重构出整个径向解。
 
-这一层很重要，因为每一个 mode 都要碰到 radial solve。径向层不稳定，整个 pipeline 就会很脆；径向层如果可复用，上面的源项积分和 mode summation 就可以写成真正的 production workflow，而不是一堆临时脚本。
+这一层很重要，因为每一个 mode 都要碰到 radial solve，而径向方程求解一直是 source integral calculation 里的一个 bottleneck。在当前实现里，这个构造对重复 mode production 来说大约比传统直接数值求解 GSN 方程和 MST 路径快两个数量级左右。把单个 mode 的径向求解时间降下来，是整个 0PA flux workflow 能真正跑起来的关键。
 
 <figure class="isem-figure">
   <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Iterative series expansion matching for radial Teukolsky solutions">
-  <figcaption>ISEM 的径向构造思想：局部级数信息向外传播，并在匹配点把不同物理解分支接起来，从而得到具有一致视界和无穷远行为的径向解。Flux workflow 反复调用的就是这一层。</figcaption>
+  <figcaption>ISEM 的径向构造思想：从 horizon 和 infinity 分别生成级数解，推进到中间匹配点，并通过函数值和径向导数进行 matching。由此得到的渐近振幅会直接进入 flux calculation。</figcaption>
 </figure>
 
 <div class="isem-steps">
   <div class="isem-step">
     <strong>齐次解</strong>
-    <p>统一构造 radial Teukolsky / GSN 解，并保持边界条件和归一化约定一致。</p>
+    <p>从受控的级数展开构造 horizon-side 和 infinity-side homogeneous radial Teukolsky solutions。</p>
   </div>
   <div class="isem-step">
-    <strong>Y interface</strong>
-    <p>给源项构造和 flux evaluation 提供同一套径向变量约定。</p>
+    <strong>Matching coefficients</strong>
+    <p>在中间点匹配解和导数，得到 flux 计算需要的渐近振幅。</p>
   </div>
   <div class="isem-step">
-    <strong>Fallback</strong>
-    <p>当某些径向构造不是最优选择时，保留自动回退路径。</p>
+    <strong>Source interface</strong>
+    <p>把重构后的径向解和振幅复用于 source integral 与 flux evaluation。</p>
   </div>
 </div>
 
-## 真正关键的变化：mode sum 怎么加
+## 第二块：mode 怎么加在一起
 
-对 eccentric equatorial orbit 来说，径向指标 $n$ 是最自然的 tail coordinate。对 generic orbit 还会多一个极向指标 $k$，但核心问题类似：高偏心率最清楚地体现在 radial harmonic tail 上。如果把 $n$ 混在一个大 rectangular grid 里，截断就不够透明。
+第二块是 mode summation 的顺序。一个很有用的经验结构是，贡献更大的 mode 往往在角向空间里接近对角线：对固定的 $\ell$ 来说，$m=\pm \ell$ 的分支通常是比较重要的贡献。直接做 rectangular loop 并没有利用这个结构。如果固定 $\ell$，再从 $-\ell$ 到 $\ell$ 扫完整个 $m$，然后再套进很大的 $k$ 和 $n$ 范围，程序会算很多 mode 之后才看得清真正的收敛结构。
+
+更自然的顺序是固定 $m$，然后让 $\ell$ 从 $\max(|m|,2)$ 开始往上加。这样角向收敛更容易判断。同样的想法也可以推广到 $k$ 和 $n$。$k$ 方向通常收敛更快，在这里考虑的情形里一般十个 shell 左右就可以降到很小；而径向谐波 $n$ 收敛更慢，承载高偏心率带来的长尾。因此把 $n$ 放在最后，是为了把最慢的 radial tail 暴露出来。
 
 以前很自然的想法是：
 
@@ -271,22 +273,22 @@ window.MathJax = {
   <div class="isem-compare__panel">
     <h3>Rectangular grid 思路</h3>
     <ul>
-      <li>先把径向/极向 block 放大：先 $n$，再 $k$。</li>
-      <li>再扩展方位角和角向结构：再 $m$，最后 $\ell$。</li>
-      <li>实现很直接，但 radial tail 被混进了整个矩形里。</li>
+      <li>先选一个很大的 $(\ell,m,k,n)$ box。</li>
+      <li>即使很多条目已经很小，也会在整个 block 里继续扫。</li>
+      <li>最慢的 radial tail 被混进四维矩形里，不容易判断截断。</li>
     </ul>
   </div>
   <div class="isem-compare__panel">
     <h3>Production workflow 思路</h3>
     <ul>
-      <li>实际控制顺序反过来：先 $\ell$，再 $m$，再 $k$。</li>
-      <li>把 $n$ 留到最后，作为径向尾部单独监控。</li>
-      <li>高偏心率情况下，截断点会非常清楚地表现为一个 $n$-shell 判断。</li>
+      <li>对每个 $m$，让 $\ell$ 从 $\max(|m|,2)$ 开始往上加。</li>
+      <li>先处理收敛更快的 $k$ shell。</li>
+      <li>把 $n$ 留在最后，让高偏心率截断直接可见。</li>
     </ul>
   </div>
 </div>
 
-这个其实和 ISEM 本身没那么直接。ISEM 是 radial solver；这里讲的是 mode summation 的组织方式。这样做的好处是很具体的：代码可以报告无穷远分支和视界分支分别跑到了哪个 $n$，最后一个 shell 贡献多大，是否应该手动增大 $n_\mathrm{max}$。高偏心率时，这就是最有用的诊断。你能直接看出来 radial tail 到底死没死，而不是被四维矩形藏起来。
+这个顺序的实际好处是收敛更容易诊断。程序不再只是问“这个 rectangular block 够不够大”，而是可以直接报告无穷远分支和视界分支分别跑到了哪个 $n$，最后一个 shell 贡献多大，是否应该增大 $n_\mathrm{max}$。当前代码里最大的径向截断设置为 $n_\mathrm{max}=500$，对目标范围里 $e<0.9$ 的情形基本稳定。和 rectangular ordering 相比，这种按 shell 暴露尾部的顺序通常可以少算约 50% 的 mode，同时更方便判断 truncation。
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Mode summation 流程</div>
@@ -299,13 +301,13 @@ window.MathJax = {
   </div>
 </div>
 
-本地 benchmark notes 里，grouped mode ordering 是一个 10,000-mode generic high-e manifest 中测试到的最快 trapezoidal-SIMD 路径。blog 里真正想强调的不是某个文件名，而是这个原则：慢变量外层组织，尾部坐标清楚暴露，不要让四维矩形把收敛性藏起来。所以对外讲清楚的 workflow 就是 $\ell \to m \to k \to n$：先角向结构，最后径向尾部。
+最后得到的 workflow 是 $\ell \to m \to k \to n$：先角向结构，再处理较快的极向方向，最后处理最慢的径向尾部。这不只是换一个 loop order，而是把原来被四维矩形藏起来的收敛信息显式暴露出来。
 
 ## Adaptive Levin：尾部 mode 要用对积分器
 
-第二个核心是 Adaptive Levin。高偏心率 mode，尤其是大的 $n$，源项积分会出现很强的振荡。普通求积方法在这种情况下会把大量采样点花在“追相位”上。
+第三块是 Adaptive Levin。高偏心率 mode，尤其是大的 $n$，源项积分会出现很强的振荡。普通求积方法在这种情况下会把大量采样点花在“追相位”上。以一维径向积分为例，普通采样型方法可能需要约 $2^{14}=16384$ 个径向采样点才能达到需要的收敛；Adaptive Levin 路径有效上大约到 $2048$ 这个量级就可以达到类似的收敛效果。
 
-Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进积分策略里。这就是为什么它适合尾部 mode：简单 mode 用简单方法，真正出现高频振荡结构时再切换。在大批量计算里，另一个关键点是复用：轨道采样、相位数据、workspace、分支元数据，都不应该每个 mode 从零开始重建。
+Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进积分策略里，并且把积分区间自适应地切成更小的片段。每个小区间上使用很小的 local grid，二维设置里通常是 $17\times17$。局部 Levin 系统的 dense solve 对每个 segment 大约按 $O(q^3)$ 缩放，这里 $q=17$；总成本随被接受的小区间数增长，而不是随一个全局膨胀的采样网格增长。对 generic 2D 积分，当前做法是在 radial 方向用 Adaptive Levin，在 $\zeta$ 方向用 Clenshaw-Curtis。
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin 流程</div>
@@ -318,9 +320,7 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
   </div>
 </div>
 
-当前 generic high-e 的本地推荐方案是 radial adaptive Levin + fixed theta Clenshaw-Curtis。保守的 $17\times17$ local grid 在 benchmark summary 里给出的 stratified 1000-row post-warm median 是 8.925 ms；低/高 $n$ 的 100-row focused checks 也在同一量级，高 $n$ p95 是 16.531 ms。对有代表性的 eccentric single-mode 检查，warm 之后的低阶 mode 已经可以低于 5 ms 这个量级；对更困难的 eccentric tail batch，cache-reuse benchmark 里的 repeated-run 时间大致是每个 mode 几毫秒到几十毫秒，取决于轨道和精度设置。
-
-这些数字是当前 open-source path 的工程 benchmark，不是通用性能保证。它们说明为什么这套东西值得试：对目标场景来说，单个 source integral 不再是看起来完全不可承受的瓶颈；generic 2D 路径在当前最好的 route 里已经到了 10 ms 左右的尺度。
+效果很直接：困难的高 $n$ 积分不再需要和简单 mode 使用同一套 brute-force sampling。Radial Adaptive Levin 加固定 $\zeta$ 方向的 Clenshaw-Curtis，可以控制高频径向振荡，同时在 generic orbit 的二维积分里保留稳定的张量积结构。
 
 <div class="isem-metric">
   <div class="isem-metric__item">

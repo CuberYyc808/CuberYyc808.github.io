@@ -79,13 +79,13 @@ lang_switch_url: /tools/
 <div class="tools-grid">
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Teukolsky 能流缩略图">
+      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="0PA 能流缩略图">
       <div>
-        <h2>ISEM Teukolsky 能流流程</h2>
+        <h2>adiabatic (0PA) 能流流程</h2>
         <div class="tool-card__tag">EMRI 能流生成</div>
       </div>
     </div>
-    <p>面向频域 Teukolsky 能流批量计算的技术基础设施，将径向方程求解、按壳层组织的多模求和，以及高振荡源项积分结合起来，用于高偏心率和一般 EMRI 轨道。</p>
+    <p>面向频域 0PA flux generation 的技术基础设施，将径向方程求解、按壳层组织的多模求和，以及高振荡源项积分结合起来，用于高偏心率和一般 EMRI 轨道。</p>
     <div class="tool-card__links">
       <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">技术博客</a>
       <a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">相关研究</a>
@@ -103,7 +103,7 @@ lang_switch_url: /tools/
     <p>用于 Kerr 微扰计算的 Julia 工具，包含齐次解、源项驱动的非齐次流程，并与频域波形和能流生成直接相关。</p>
     <div class="tool-card__links">
       <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a>
-      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">ISEM 说明</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">0PA flux workflow</a>
     </div>
   </article>
 

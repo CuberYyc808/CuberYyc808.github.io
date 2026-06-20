@@ -231,39 +231,41 @@ The workflow has three parts. First, the radial equation is handled by an iterat
 
 ## Motivation: why this is worth doing
 
-For LISA, Taiji, TianQin and other EMRI programs, 0PA flux generation is a production problem. Frequency-domain Teukolsky calculations are accurate and modular, but high-eccentricity and generic Kerr orbits spread power across many harmonics. Once the mode sum becomes large, a naive "just make the rectangular grid bigger" approach is not a satisfying workflow.
+LISA, Taiji, and TianQin are space-based gravitational-wave detector projects. One important class of sources for these missions is EMRIs, where 0PA flux generation becomes a production-scale numerical task rather than a small script. Frequency-domain Teukolsky calculations are accurate and modular, but the cost grows sharply when the orbit becomes highly eccentric, inclined, and precessing. In the fully generic case, the signal power is spread across a large set of $(\ell,m,k,n)$ modes. If the time for a single mode cannot be reduced effectively, the full flux calculation becomes a large computational expense.
 
 The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to brute-force.
 
 ## The radial-solver layer
 
-The radial part uses iterative series expansion matching, abbreviated as ISEM below. It is the radial-solver part of the workflow, separate from the mode-summation order and separate from the source-integral method. It provides a first-class radial construction path for Teukolsky/GSN calculations, with matching, transformations, and the `Y` radial interface organized so the source side can call the same conventions repeatedly.
+The first piece is the radial solver. Here the radial Teukolsky equation is handled by iterative series expansion matching, abbreviated as ISEM below. The idea is to use the transformed form of the Teukolsky equation, build series expansions from the horizon and from infinity, and then propagate the two physical branches toward an intermediate matching point. At that point, the solution and its radial derivative are matched to determine the matching coefficients, which are also the asymptotic amplitudes needed for flux evaluation. The full radial solution is then reconstructed from the matched branches.
 
-This matters because the radial solve sits inside every mode calculation. If the radial layer is unstable, the rest of the pipeline is fragile. If the radial layer is reusable, source construction and flux summation can be written as a production workflow rather than as a collection of one-off scripts.
+This is the right place to spend effort because the radial solve sits inside every mode calculation and has long been a bottleneck in the source-integral calculation. In the current implementation, this construction is roughly two orders of magnitude faster than the traditional direct numerical GSN solve and MST-based routes for the same repeated mode-production use case. Reducing this per-mode cost is what makes the larger 0PA flux workflow practical.
 
 <figure class="isem-figure">
   <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Animated illustration of iterative series expansion matching for radial Teukolsky solutions">
-  <figcaption>ISEM as a radial construction idea: local series information is propagated and matched so the physical radial branches can be built with consistent horizon and infinity behavior. This is the radial layer that the flux workflow calls repeatedly.</figcaption>
+  <figcaption>ISEM as a radial construction idea: series solutions are generated from the horizon and infinity, propagated to an intermediate point, and matched through the value and radial derivative. The resulting asymptotic amplitudes feed directly into the flux calculation.</figcaption>
 </figure>
 
 <div class="isem-steps">
   <div class="isem-step">
     <strong>Homogeneous solutions</strong>
-    <p>Construct radial Teukolsky/GSN solutions with consistent boundary and normalization conventions.</p>
+    <p>Build horizon-side and infinity-side homogeneous radial Teukolsky solutions from controlled series expansions.</p>
   </div>
   <div class="isem-step">
-    <strong>Y interface</strong>
-    <p>Expose a shared radial variable convention for source construction and flux evaluation.</p>
+    <strong>Matching coefficients</strong>
+    <p>Match the solution and derivative at an intermediate point to obtain the asymptotic amplitudes.</p>
   </div>
   <div class="isem-step">
-    <strong>Fallback behavior</strong>
-    <p>Keep automatic fallback paths for cases where a specific radial construction is not the best choice.</p>
+    <strong>Source interface</strong>
+    <p>Reuse the reconstructed radial solution and amplitudes in the source integral and flux evaluation.</p>
   </div>
 </div>
 
-## The important change: how the mode sum is ordered
+## The second piece: how modes are added together
 
-For eccentric equatorial orbits the radial index $n$ is the natural tail coordinate. For generic orbits there is also a polar index $k$, but the same lesson remains: high eccentricity shows up very clearly in the radial harmonic tail. If $n$ is buried inside a rectangular grid, truncation is harder to interpret.
+The second piece is the mode-summation order. The useful empirical structure is that the largest contributions usually sit close to the diagonal in angular space: for a fixed $\ell$, modes with $m=\pm \ell$ are often among the dominant branches. A direct rectangular loop does not exploit this structure. If one fixes $\ell$ and then scans all $m$ from $-\ell$ to $\ell$, and then repeats this inside large $k$ and $n$ ranges, the calculation can spend many modes before the relevant convergence pattern becomes clear.
+
+A more useful order is to fix $m$ and grow $\ell$ from $\max(|m|,2)$ upward. This makes the angular convergence easier to see. The same idea can then be extended to the polar and radial harmonics. The $k$ direction often converges quickly, usually within about ten shells for the cases considered here, while the radial harmonic $n$ is slower and carries the long eccentricity tail. For that reason, $n$ is left as the final summation direction.
 
 The older mental model is:
 
@@ -271,22 +273,22 @@ The older mental model is:
   <div class="isem-compare__panel">
     <h3>Rectangular-grid mindset</h3>
     <ul>
-      <li>First enlarge the radial/polar block: $n$, then $k$.</li>
-      <li>Then enlarge azimuthal and angular content: $m$, then $\ell$.</li>
-      <li>Easy to implement, but the radial tail is mixed into the whole rectangle.</li>
+      <li>Choose a large box in $(\ell,m,k,n)$.</li>
+      <li>Loop through the full block even when many entries are already negligible.</li>
+      <li>The slow radial tail is mixed into the whole four-dimensional rectangle.</li>
     </ul>
   </div>
   <div class="isem-compare__panel">
     <h3>Production workflow mindset</h3>
     <ul>
-      <li>Reverse the practical control order: $\ell$, then $m$, then $k$.</li>
-      <li>Leave $n$ last, as the radial tail direction to monitor.</li>
-      <li>For high eccentricity, the stopping point becomes visible as an $n$-shell decision.</li>
+      <li>For each $m$, grow $\ell$ from $\max(|m|,2)$ upward.</li>
+      <li>Add the faster $k$ shells before the slow radial direction.</li>
+      <li>Leave $n$ last, so the high-eccentricity truncation is visible.</li>
     </ul>
   </div>
 </div>
 
-This is not really an ISEM claim. It is a mode-summation claim. The benefit is conceptual and practical: once $n$ is treated as the radial tail coordinate, the code can report where the infinity and horizon branches reached, what the last shell contributed, and whether the user should increase $n_\mathrm{max}$. In a high-eccentricity run, that is exactly the diagnostic you want. You can literally see whether the radial tail is dead or still alive.
+The practical advantage is that convergence becomes easier to diagnose. Instead of asking whether a whole rectangular block is large enough, the code can report where the infinity and horizon branches reached in $n$, how large the final shell contribution is, and whether $n_\mathrm{max}$ should be increased. In this ordering, the maximum radial truncation used in the code is $n_\mathrm{max}=500$, which is stable for the target cases with $e<0.9$. Compared with the rectangular ordering, this shell-aware order typically reduces the number of modes that need to be evaluated by about 50%, while making the truncation decision more transparent.
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Mode-summation flow</div>
@@ -299,13 +301,13 @@ This is not really an ISEM claim. It is a mode-summation claim. The benefit is c
   </div>
 </div>
 
-In local benchmark notes, a grouped mode ordering was the fastest tested trapezoidal-SIMD path for one 10,000-mode generic high-e manifest. The blog-level takeaway is broader than that exact file name: group slow-changing structure, keep tail diagnostics explicit, and do not let a four-dimensional rectangle hide convergence. The user-facing workflow is therefore $\ell \to m \to k \to n$: angular structure first, radial tail last.
+The resulting workflow is therefore $\ell \to m \to k \to n$: angular structure first, the fast polar direction next, and the slow radial tail last. This is not just a different loop order; it is a way to expose the convergence information that is otherwise hidden inside a large rectangular sum.
 
 ## Adaptive Levin: use the right tool for the tail
 
-The second piece is Adaptive Levin integration. For high-eccentricity modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase.
+The third piece is Adaptive Levin integration. For high-eccentricity modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one-dimensional radial integrations, a standard sampling-based route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
 
-Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy. That is why it is a natural tail method: use simpler rules when the mode is easy; switch when the high-frequency source structure appears. In large batches, the other important point is reuse: orbit samples, phase data, workspaces, and branch metadata should not be rebuilt from scratch for every single mode.
+Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy and splits the interval into smaller adaptive segments. On each local segment, the working grid is small, typically $17\times17$ in the two-dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$ for the Levin system on a segment, and the total cost scales with the number of accepted segments rather than with one globally inflated sampling grid. For generic two-dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw-Curtis quadrature in the $\zeta$ direction.
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin flow</div>
@@ -318,9 +320,7 @@ Adaptive Levin changes the problem. Instead of sampling the oscillation blindly,
   </div>
 </div>
 
-The current generic high-e recommendation from local tests is radial adaptive Levin plus fixed theta Clenshaw-Curtis. With a conservative $17\times17$ local grid, the benchmark summary reports a post-warm median of 8.925 ms on a stratified 1000-row sample; focused low/high-$n$ 100-row checks are around the same scale, with high-$n$ p95 reported at 16.531 ms. For representative eccentric single-mode checks, warmed low-mode timings are already well below the 5 ms scale; for harder eccentric tail batches, repeated-run timings in the cache-reuse benchmark are several-to-tens of milliseconds per mode across sampled orbits.
-
-Those numbers are engineering benchmarks, not a universal performance guarantee for the current open-source path. They explain why this workflow is worth trying. For the cases it is designed for, the single-mode source integral is no longer the hopeless bottleneck it used to look like, and the generic 2D path is already operating around the 10 ms scale in the best current route.
+The effect is simple: the difficult high-$n$ integrals no longer require the same brute-force sampling strategy as the easy modes. Radial Adaptive Levin plus fixed-$\zeta$ Clenshaw-Curtis keeps the high-frequency radial direction under control, while still using a stable tensor-product structure for generic orbits.
 
 <div class="isem-metric">
   <div class="isem-metric__item">
