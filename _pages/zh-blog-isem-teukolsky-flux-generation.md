@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "不只是 ISEM：面向高偏心率 EMRI 的 Teukolsky 能流生成流程"
+title: "面向高偏心率 EMRI 的 Teukolsky 能流生成流程"
 permalink: /zh/blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: zh
@@ -195,11 +195,11 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">技术博客</div>
-<p class="isem-note"><strong>ISEM 不是这篇 blog 的全部。ISEM，也就是 iterative series expansion matching，只是 radial solver 的一种方法。真正值得讲的是：这个径向层怎么和 shell-ordered mode summation、Adaptive Levin 积分合在一起，让高偏心率 flux production 变得可用。</strong></p>
+<p class="isem-note"><strong>这篇 note 介绍一个面向大规模频域 Teukolsky flux generation 的实用 workflow：可复用的径向求解层、能看清尾部截断的 mode-summation 顺序，以及用于高偏心率困难 mode 的 Adaptive Levin 积分。</strong></p>
 
-做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
+做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不只是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
 
-这就是这篇 blog 想讲的东西。ISEM 本身是 radial-solver layer；围绕它还有 mode summation 的组织方式和 Adaptive Levin 的尾部积分策略。三者合在一起，才是现在用于高偏心率和 generic Teukolsky flux generation 的实用 workflow。它现在不作为一篇独立论文来包装，更合适的位置是作为未来 LISA waveform infrastructure 可以使用的技术基础设施。
+这个 workflow 有三个部分。第一，径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。第二，mode sum 的组织方式要让径向谐波 $n$ 保持为最后的 tail direction，而不是被藏在一个 rectangular grid 里。第三，对高偏心率下强振荡的 source integral，使用 Adaptive Levin 积分。它现在不作为一篇独立论文来包装，更合适的位置是作为未来 LISA waveform infrastructure 可以使用的技术基础设施。
 
 <div class="isem-links">
   <a href="{{ '/zh/tools/' | relative_url }}">工具总览</a>
@@ -212,7 +212,7 @@ window.MathJax = {
   <div class="isem-diagram__title">一句话流程图</div>
   <div class="isem-flow">
     <div class="isem-flow__box"><strong>Kerr 轨道</strong><span>频率、相位、转向点</span></div>
-    <div class="isem-flow__box"><strong>径向求解</strong><span>ISEM / Teukolsky / GSN 齐次解</span></div>
+    <div class="isem-flow__box"><strong>径向求解</strong><span>ISEM、Teukolsky 和 GSN 齐次解</span></div>
     <div class="isem-flow__box"><strong>源项积分</strong><span>普通积分或尾部 Adaptive Levin</span></div>
     <div class="isem-flow__box"><strong>Mode shells</strong><span>外层按 $\ell$、$m$、$k$ 组织；$n$ 作为径向尾部监控</span></div>
     <div class="isem-flow__box"><strong>Flux dataset</strong><span>无穷远与视界分支，并记录收敛信息</span></div>
@@ -225,9 +225,9 @@ window.MathJax = {
 
 我们真正关心的不只是“某一个 mode 算得快不快”，而是：哪些区域还在贡献？哪些区域已经是 tail？哪个区域该换成更适合高振荡的积分器？这就是当前实现和普通矩形循环的区别：mode sum 不是一个盲目放大的循环，而是一个需要被诊断、被记录、被控制的对象。
 
-## ISEM：径向求解层
+## 径向求解层
 
-ISEM 是 iterative series expansion matching，是 radial solver 这一层。它不是 mode summation 方法，也不是 source integral 方法。它把 Teukolsky / GSN 的径向齐次解、matching、变量变换和 `Y` radial interface 放在同一套约定下，让 source construction 和 flux evaluation 可以反复调用。
+径向部分使用 iterative series expansion matching，后面简称 ISEM。它是这个 workflow 里的 radial solver，不是 mode summation 方法，也不是 source integral 方法。它把 Teukolsky / GSN 的径向齐次解、matching、变量变换和 `Y` radial interface 放在同一套约定下，让 source construction 和 flux evaluation 可以反复调用。
 
 这一层很重要，因为每一个 mode 都要碰到 radial solve。径向层不稳定，整个 pipeline 就会很脆；径向层如果可复用，上面的源项积分和 mode summation 就可以写成真正的 production workflow，而不是一堆临时脚本。
 

@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Beyond ISEM: a practical Teukolsky flux workflow for high-eccentricity EMRIs"
+title: "A practical Teukolsky flux workflow for high-eccentricity EMRIs"
 permalink: /blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: en
@@ -195,11 +195,11 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">Technical blog</div>
-<p class="isem-note"><strong>ISEM is not the whole blog. ISEM, short for iterative series expansion matching, is a radial solver. The real story is how that radial layer is combined with shell-ordered mode summation and Adaptive Levin integration to make high-eccentricity flux production usable.</strong></p>
+<p class="isem-note"><strong>This note introduces a practical workflow for large-scale frequency-domain Teukolsky flux generation: a reusable radial-solver layer, a tail-aware mode-summation order, and Adaptive Levin integration for difficult high-eccentricity modes.</strong></p>
 
-In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. So the useful question is not just "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
+In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
-That is the motivation for this note. ISEM itself is the radial-solver layer. Around it there is a mode-summation strategy and an Adaptive Levin strategy. Together they form the practical workflow I use for high-eccentricity and generic Teukolsky flux generation. I am not presenting this as a standalone paper right now; the more useful role is as technical infrastructure that can feed into larger LISA waveform work.
+The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where high-eccentricity source integrals become strongly oscillatory. I am not presenting this as a standalone paper right now; the more useful role is as technical infrastructure that can feed into larger LISA waveform work.
 
 <div class="isem-links">
   <a href="{{ '/tools/' | relative_url }}">Tools overview</a>
@@ -212,7 +212,7 @@ That is the motivation for this note. ISEM itself is the radial-solver layer. Ar
   <div class="isem-diagram__title">Workflow in one line</div>
   <div class="isem-flow">
     <div class="isem-flow__box"><strong>Kerr orbit</strong><span>frequencies, phases, turning points</span></div>
-    <div class="isem-flow__box"><strong>Radial solver</strong><span>ISEM / Teukolsky / GSN homogeneous solutions</span></div>
+    <div class="isem-flow__box"><strong>Radial solver</strong><span>ISEM, Teukolsky and GSN homogeneous solutions</span></div>
     <div class="isem-flow__box"><strong>Source integral</strong><span>trapezoidal or Adaptive Levin depending on the tail</span></div>
     <div class="isem-flow__box"><strong>Mode shells</strong><span>$\ell$, $m$, $k$ grouped outside; $n$ monitored as radial tail</span></div>
     <div class="isem-flow__box"><strong>Flux dataset</strong><span>infinity and horizon branches with recorded convergence metadata</span></div>
@@ -225,9 +225,9 @@ For LISA, Taiji, TianQin and other EMRI programs, zero-PA flux generation is a p
 
 The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to brute-force.
 
-## ISEM: the radial-solver layer
+## The radial-solver layer
 
-ISEM means iterative series expansion matching. It is the radial-solver part, not the mode-summation method and not the source-integral method. It provides a first-class radial construction path for Teukolsky/GSN calculations, with matching, transformations, and the `Y` radial interface organized so the source side can call the same conventions repeatedly.
+The radial part uses iterative series expansion matching, abbreviated as ISEM below. It is the radial-solver part of the workflow, separate from the mode-summation order and separate from the source-integral method. It provides a first-class radial construction path for Teukolsky/GSN calculations, with matching, transformations, and the `Y` radial interface organized so the source side can call the same conventions repeatedly.
 
 This matters because the radial solve sits inside every mode calculation. If the radial layer is unstable, the rest of the pipeline is fragile. If the radial layer is reusable, source construction and flux summation can be written as a production workflow rather than as a collection of one-off scripts.
 
