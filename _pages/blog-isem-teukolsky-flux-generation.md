@@ -205,7 +205,7 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">Technical blog</div>
-<p class="isem-note"><strong>This note introduces a practical workflow for large-scale frequency-domain Teukolsky flux generation: a reusable radial-solver layer, a tail-aware mode-summation order, and Adaptive Levin integration for difficult high-eccentricity modes.</strong></p>
+<p class="isem-note"><strong>This note introduces a practical workflow for large-scale 0PA flux generation: a reusable radial-solver layer, a tail-aware mode-summation order, and Adaptive Levin integration for difficult high-eccentricity modes.</strong></p>
 
 In EMRI waveform work, a flux calculation is rarely a one-off exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
@@ -231,7 +231,7 @@ The workflow has three parts. First, the radial equation is handled by an iterat
 
 ## Motivation: why this is worth doing
 
-For LISA, Taiji, TianQin and other EMRI programs, zero-PA flux generation is a production problem. Frequency-domain Teukolsky calculations are accurate and modular, but high-eccentricity and generic Kerr orbits spread power across many harmonics. Once the mode sum becomes large, a naive "just make the rectangular grid bigger" approach is not a satisfying workflow.
+For LISA, Taiji, TianQin and other EMRI programs, 0PA flux generation is a production problem. Frequency-domain Teukolsky calculations are accurate and modular, but high-eccentricity and generic Kerr orbits spread power across many harmonics. Once the mode sum becomes large, a naive "just make the rectangular grid bigger" approach is not a satisfying workflow.
 
 The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to brute-force.
 

@@ -205,7 +205,7 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">技术博客</div>
-<p class="isem-note"><strong>这篇 note 介绍一个面向大规模频域 Teukolsky flux generation 的实用 workflow：可复用的径向求解层、能看清尾部截断的 mode-summation 顺序，以及用于高偏心率困难 mode 的 Adaptive Levin 积分。</strong></p>
+<p class="isem-note"><strong>这篇 note 介绍一个面向大规模频域 0PA flux generation 的实用 workflow：可复用的径向求解层、能看清尾部截断的 mode-summation 顺序，以及用于高偏心率困难 mode 的 Adaptive Levin 积分。</strong></p>
 
 做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不只是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
 
@@ -231,7 +231,7 @@ window.MathJax = {
 
 ## Motivation：为什么要这么做
 
-对 LISA、太极、天琴以及相关 EMRI 项目来说，zero-PA flux generation 不是一个小脚本问题，而是一个生产问题。频域 Teukolsky 计算的优点是精确、模块化；问题是高偏心率和 generic Kerr 轨道会把能量铺到很多谐波上。mode sum 一大，单纯把 rectangular grid 继续放大就不是一个很好的 workflow 了。
+对 LISA、太极、天琴以及相关 EMRI 项目来说，0PA flux generation 不是一个小脚本问题，而是一个生产问题。频域 Teukolsky 计算的优点是精确、模块化；问题是高偏心率和 generic Kerr 轨道会把能量铺到很多谐波上。mode sum 一大，单纯把 rectangular grid 继续放大就不是一个很好的 workflow 了。
 
 我们真正关心的不只是“某一个 mode 算得快不快”，而是：哪些区域还在贡献？哪些区域已经是 tail？哪个区域该换成更适合高振荡的积分器？这就是当前实现和普通矩形循环的区别：mode sum 不是一个盲目放大的循环，而是一个需要被诊断、被记录、被控制的对象。
 
