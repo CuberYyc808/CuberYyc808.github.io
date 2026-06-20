@@ -53,6 +53,13 @@ Email: cuber.ycyin@gmail.com
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">Jun 21, 2026</div>
+    <div>
+      <h3>First technical blog updated.</h3>
+      <p>The new blog post on the <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">adiabatic (0PA) flux workflow</a> is now online.</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">Jun 2026</div>
     <div>
       <h3>GSN <code>0.9.0</code> is getting the ISEM branch.</h3>

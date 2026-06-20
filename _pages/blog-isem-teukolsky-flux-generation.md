@@ -334,7 +334,7 @@ The effect is simple: the difficult high $n$ integrals no longer require the sam
     <span class="isem-metric__label">95% of high $n$ modes in generic case 2D convolution integrals finish within this time</span>
   </div>
   <div class="isem-metric__item">
-    <span class="isem-metric__value">&lt;5 ms</span>
+    <span class="isem-metric__value">5 ms</span>
     <span class="isem-metric__label">95% of eccentric case 1D integral tests finish below this scale</span>
   </div>
 </div>

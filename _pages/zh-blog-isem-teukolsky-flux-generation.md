@@ -334,7 +334,7 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
     <span class="isem-metric__label">generic 情形下 2D convolution integral 的 high $n$ modes 中，95% 可以在这个时间以内完成</span>
   </div>
   <div class="isem-metric__item">
-    <span class="isem-metric__value">&lt;5 ms</span>
+    <span class="isem-metric__value">5 ms</span>
     <span class="isem-metric__label">eccentric 情形下的 1D integral 测试中，95% 可以低于这个量级</span>
   </div>
 </div>

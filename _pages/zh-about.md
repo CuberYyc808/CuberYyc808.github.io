@@ -50,6 +50,13 @@ lang_switch_url: /
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">2026 年 6 月 21 日</div>
+    <div>
+      <h3>第一篇技术博客更新。</h3>
+      <p>关于 <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">adiabatic (0PA) flux workflow</a> 的博客已经上线。</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">2026 年 6 月</div>
     <div>
       <h3>GSN <code>0.9.0</code> 的 ISEM 分支基本就位。</h3>
