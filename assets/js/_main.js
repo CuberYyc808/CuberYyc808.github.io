@@ -47,11 +47,6 @@ var toggleTheme = () => {
   setTheme(new_theme);
 };
 
-let determineLanguageSetting = () => {
-  const languageSetting = localStorage.getItem("language");
-  return (languageSetting === "zh" || languageSetting === "en") ? languageSetting : null;
-};
-
 let currentPageLanguage = () => {
   return $("html").attr("lang") === "zh" ? "zh" : "en";
 };
@@ -59,18 +54,6 @@ let currentPageLanguage = () => {
 let languageTarget = () => {
   const target = $("#language-toggle a").attr("href");
   return target || null;
-};
-
-let applyLanguagePreference = () => {
-  const preferredLanguage = determineLanguageSetting();
-  if (!preferredLanguage || preferredLanguage === currentPageLanguage()) {
-    return;
-  }
-
-  const target = languageTarget();
-  if (target) {
-    window.location.href = target;
-  }
 };
 
 var toggleLanguage = (event) => {
@@ -142,8 +125,7 @@ $(document).ready(function () {
   // Enable the theme toggle
   $('#theme-toggle').on('click', toggleTheme);
 
-  // Enable persistent language toggle
-  applyLanguagePreference();
+  // Enable language toggle. The default entry remains English unless the user clicks Chinese.
   $('#language-toggle').on('click', toggleLanguage);
 
   // Enable the sticky footer
