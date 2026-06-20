@@ -6,7 +6,7 @@ lang: zh
 lang_switch_url: /
 ---
 
-我目前是[尼尔斯·玻尔研究所](https://www.nbi.ku.dk/english/) [Strong Group](https://strong-gr.com) 的访问学者。此前就读于[北京大学](https://www.pku.edu.cn)物理学院，并于 2025 年 7 月获得学士学位。
+我目前是 [Niels Bohr Institute](https://www.nbi.ku.dk/english/) [Strong Group](https://strong-gr.com) 的 Visiting Fellow。此前就读于 [School of Physics, Peking University](https://www.phy.pku.edu.cn)，并于 2025 年 7 月获得学士学位。
 
 我的研究主要围绕黑洞微扰理论及其应用，包括不同引力波源的波形建模（如双黑洞、极端质量比旋近、双星极端质量比旋近）、黑洞准正规模，以及黑洞对引力波的散射。
 
