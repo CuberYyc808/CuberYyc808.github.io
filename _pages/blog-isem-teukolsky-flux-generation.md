@@ -221,7 +221,7 @@ The workflow has three parts. First, the radial equation is handled by an iterat
 <div class="isem-diagram">
   <div class="isem-diagram__title">Workflow in one line</div>
   <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Kerr orbit</strong><span>frequencies, phases, turning points</span></div>
+    <div class="isem-flow__box"><strong>Kerr orbit</strong><span>trajectory, velocity, phases</span></div>
     <div class="isem-flow__box"><strong>Radial solver</strong><span>ISEM, Teukolsky and GSN homogeneous solutions</span></div>
     <div class="isem-flow__box"><strong>Source integral</strong><span>trapezoidal or Adaptive Levin depending on the tail</span></div>
     <div class="isem-flow__box"><strong>Mode shells</strong><span>$\ell$, $m$, $k$ grouped outside; $n$ monitored as radial tail</span></div>
