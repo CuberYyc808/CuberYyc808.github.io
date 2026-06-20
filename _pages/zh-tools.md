@@ -28,6 +28,13 @@ lang_switch_url: /tools/
   flex-direction: column;
   min-height: 245px;
   overflow: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.tool-card:hover,
+.tool-card:focus-within {
+  border-color: #52adc8;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 .tool-card__head {
   display: grid;
@@ -77,22 +84,7 @@ lang_switch_url: /tools/
 </style>
 
 <div class="tools-grid">
-  <article class="tool-card">
-    <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="0PA 能流缩略图">
-      <div>
-        <h2>adiabatic (0PA) 能流流程</h2>
-        <div class="tool-card__tag">EMRI 能流生成</div>
-      </div>
-    </div>
-    <p>面向频域 0PA flux generation 的技术基础设施，将径向方程求解、按壳层组织的多模求和，以及高振荡源项积分结合起来，用于高偏心率和一般 EMRI 轨道。</p>
-    <div class="tool-card__links">
-      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">技术博客</a>
-      <a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">相关研究</a>
-    </div>
-  </article>
-
-  <article class="tool-card">
+  <article class="tool-card" id="generalized-sasaki-nakamura">
     <div class="tool-card__head">
       <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="波形缩略图">
       <div>
@@ -103,11 +95,11 @@ lang_switch_url: /tools/
     <p>用于 Kerr 微扰计算的 Julia 工具，包含齐次解、源项驱动的非齐次流程，并与频域波形和能流生成直接相关。</p>
     <div class="tool-card__links">
       <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a>
-      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">0PA flux workflow</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}#径向求解层">径向求解说明</a>
     </div>
   </article>
 
-  <article class="tool-card">
+  <article class="tool-card" id="kerr-geodesics">
     <div class="tool-card__head">
       <img class="tool-card__thumb" src="{{ '/files/Trajectory_generic.gif' | relative_url }}" alt="Kerr 轨道缩略图">
       <div>
@@ -118,11 +110,11 @@ lang_switch_url: /tools/
     <p>用轨道根数参数化束缚类时 Kerr 测地线，为 EMRI 与 b-EMRI 波形流程提供轨道频率、相位和轨迹。</p>
     <div class="tool-card__links">
       <a href="https://github.com/CuberYyc808/KerrGeodesics.jl">GitHub</a>
-      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">能流流程</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}#mode-怎么加在一起">Mode-sum 背景</a>
     </div>
   </article>
 
-  <article class="tool-card">
+  <article class="tool-card" id="adaptive-levin">
     <div class="tool-card__head">
       <img class="tool-card__thumb" src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="振荡信号缩略图">
       <div>
@@ -133,7 +125,7 @@ lang_switch_url: /tools/
     <p>用于一维和二维高振荡积分的自适应 Levin 方法，可处理高偏心率源项中快速振荡的高频结构。</p>
     <div class="tool-card__links">
       <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">GitHub</a>
-      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">方法背景</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}#adaptive-levin尾部-mode-要用对积分器">方法背景</a>
     </div>
   </article>
 </div>

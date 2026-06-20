@@ -28,6 +28,13 @@ lang_switch_url: /zh/tools/
   flex-direction: column;
   min-height: 245px;
   overflow: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.tool-card:hover,
+.tool-card:focus-within {
+  border-color: #52adc8;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 .tool-card__head {
   display: grid;
@@ -77,22 +84,7 @@ lang_switch_url: /zh/tools/
 </style>
 
 <div class="tools-grid">
-  <article class="tool-card">
-    <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="0PA flux thumbnail">
-      <div>
-        <h2>adiabatic (0PA) flux workflow</h2>
-        <div class="tool-card__tag">EMRI flux generation</div>
-      </div>
-    </div>
-    <p>Technical infrastructure for repeated frequency-domain 0PA flux generation, combining radial solves, shell-aware mode summation, and oscillatory source integration for high-eccentricity and generic EMRI orbits.</p>
-    <div class="tool-card__links">
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Technical blog</a>
-      <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Related research</a>
-    </div>
-  </article>
-
-  <article class="tool-card">
+  <article class="tool-card" id="generalized-sasaki-nakamura">
     <div class="tool-card__head">
       <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Waveform thumbnail">
       <div>
@@ -103,11 +95,11 @@ lang_switch_url: /zh/tools/
     <p>Julia tools for Kerr perturbation calculations, including homogeneous solutions and source-driven inhomogeneous workflows connected to frequency-domain waveform and flux production.</p>
     <div class="tool-card__links">
       <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a>
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">0PA flux workflow</a>
+      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}#the-radial-solver-layer">Radial solver note</a>
     </div>
   </article>
 
-  <article class="tool-card">
+  <article class="tool-card" id="kerr-geodesics">
     <div class="tool-card__head">
       <img class="tool-card__thumb" src="{{ '/files/Trajectory_generic.gif' | relative_url }}" alt="Kerr trajectory thumbnail">
       <div>
@@ -118,11 +110,11 @@ lang_switch_url: /zh/tools/
     <p>Bound timelike Kerr geodesics parameterized by orbital elements, supplying orbital frequencies, phases, and trajectories for EMRI and b-EMRI waveform pipelines.</p>
     <div class="tool-card__links">
       <a href="https://github.com/CuberYyc808/KerrGeodesics.jl">GitHub</a>
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Flux workflow</a>
+      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}#how-modes-are-added-together">Mode-sum context</a>
     </div>
   </article>
 
-  <article class="tool-card">
+  <article class="tool-card" id="adaptive-levin">
     <div class="tool-card__head">
       <img class="tool-card__thumb" src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="Oscillatory signal thumbnail">
       <div>
@@ -133,7 +125,7 @@ lang_switch_url: /zh/tools/
     <p>Adaptive Levin methods for one- and two-dimensional highly oscillatory integrals, useful when high-eccentricity source terms develop rapidly oscillating high-frequency structure.</p>
     <div class="tool-card__links">
       <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">GitHub</a>
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Method context</a>
+      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}#adaptive-levin-use-the-right-tool-for-the-tail">Method context</a>
     </div>
   </article>
 </div>

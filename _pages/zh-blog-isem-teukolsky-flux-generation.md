@@ -50,6 +50,13 @@ html[data-theme="dark"] {
   text-decoration: none;
   font-weight: 600;
   background: var(--isem-surface);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.isem-links a:hover,
+.isem-links a:focus {
+  border-color: #52adc8;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 .isem-diagram {
   border: 1px solid var(--isem-border);
@@ -212,10 +219,11 @@ window.MathJax = {
 这个 workflow 有三个部分。第一，径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。第二，mode sum 的组织方式要让径向谐波 $n$ 保持为最后的 tail direction，而不是被藏在一个 rectangular grid 里。第三，对高偏心率下强振荡的 source integral，使用 Adaptive Levin 积分。
 
 <div class="isem-links">
-  <a href="{{ '/zh/tools/' | relative_url }}">工具总览</a>
+  <a href="{{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN 工具卡片</a>
+  <a href="{{ '/zh/tools/#kerr-geodesics' | relative_url }}">KerrGeodesics 卡片</a>
+  <a href="{{ '/zh/tools/#adaptive-levin' | relative_url }}">AdaptiveLevin 卡片</a>
   <a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura 波形工作</a>
   <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GSN ISEM branch</a>
-  <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">AdaptiveLevin.jl</a>
 </div>
 
 <div class="isem-diagram">
@@ -344,7 +352,7 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
 - [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM)：当前 ISEM 开发分支。
 - [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl)：用于轨道频率、相位和轨迹的束缚 Kerr 测地线基础设施。
 - [AdaptiveLevin.jl](https://github.com/CuberYyc808/AdaptiveLevin.jl)：用于高振荡积分的自适应数值方法。
-- [工具总览]({{ '/zh/tools/' | relative_url }})：主页上的相关软件入口。
+- [工具总览]({{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }})：主页上的相关软件入口。
 
 <div class="isem-callout">
   <strong>欢迎试用，也欢迎反馈。</strong> 相关代码和模块已经开放，欢迎测试和使用。

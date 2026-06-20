@@ -50,6 +50,13 @@ html[data-theme="dark"] {
   text-decoration: none;
   font-weight: 600;
   background: var(--isem-surface);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.isem-links a:hover,
+.isem-links a:focus {
+  border-color: #52adc8;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 .isem-diagram {
   border: 1px solid var(--isem-border);
@@ -212,10 +219,11 @@ In EMRI waveform work, a flux calculation is rarely a one time exercise. One qui
 The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where eccentric source integrals become strongly oscillatory.
 
 <div class="isem-links">
-  <a href="{{ '/tools/' | relative_url }}">Tools overview</a>
+  <a href="{{ '/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN tool card</a>
+  <a href="{{ '/tools/#kerr-geodesics' | relative_url }}">KerrGeodesics card</a>
+  <a href="{{ '/tools/#adaptive-levin' | relative_url }}">AdaptiveLevin card</a>
   <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura waveform work</a>
   <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GSN ISEM branch</a>
-  <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">AdaptiveLevin.jl</a>
 </div>
 
 <div class="isem-diagram">
@@ -344,7 +352,7 @@ The effect is simple: the difficult high $n$ integrals no longer require the sam
 - [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM): current ISEM development branch.
 - [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl): bound Kerr geodesic infrastructure for orbital frequencies, phases, and trajectories.
 - [AdaptiveLevin.jl](https://github.com/CuberYyc808/AdaptiveLevin.jl): adaptive methods for highly oscillatory integrals.
-- [Tools overview]({{ '/tools/' | relative_url }}): homepage entry point for the software modules.
+- [Tools overview]({{ '/tools/#generalized-sasaki-nakamura' | relative_url }}): homepage entry point for the software modules.
 
 <div class="isem-callout">
   <strong>Try it and send feedback.</strong> The code and related modules are open for testing and use.

@@ -18,6 +18,13 @@ lang_switch_url: /blog/
   border-radius: 8px;
   padding: 1rem;
   background: var(--global-bg-color);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.blog-card:hover,
+.blog-card:focus-within {
+  border-color: #52adc8;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 .blog-card h2 {
   font-size: 1.15rem;
@@ -35,6 +42,11 @@ lang_switch_url: /blog/
   line-height: 1.5;
   margin-bottom: 0.7rem;
 }
+.blog-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
 </style>
 
 <div class="blog-list">
@@ -42,6 +54,9 @@ lang_switch_url: /blog/
     <h2><a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">面向偏心 EMRI 的 adiabatic (0PA) 能流生成流程</a></h2>
     <div class="blog-card__meta">2026 年 6 月 21 日</div>
     <p>关于 radial Teukolsky solves、mode summation 顺序，以及 Adaptive Levin 积分在大规模 0PA flux generation 中用法的技术说明。</p>
-    <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">阅读博客</a>
+    <div class="blog-card__links">
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">阅读博客</a>
+      <a href="{{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }}">相关工具</a>
+    </div>
   </article>
 </div>
