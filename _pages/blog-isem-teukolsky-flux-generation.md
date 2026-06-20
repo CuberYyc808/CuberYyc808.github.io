@@ -325,7 +325,7 @@ The effect is simple: the difficult high-$n$ integrals no longer require the sam
 <div class="isem-metric">
   <div class="isem-metric__item">
     <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">post-warm median for generic 2D non-Y convolution, stratified 1000-row benchmark</span>
+    <span class="isem-metric__label">post-warm median for generic 2D convolution integral tests, stratified 1000-row sample</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">16.531 ms</span>
