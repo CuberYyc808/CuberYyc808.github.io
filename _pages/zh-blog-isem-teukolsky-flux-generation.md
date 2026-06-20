@@ -315,7 +315,7 @@ LISA、太极、天琴是空间引力波探测项目。对这些任务来说，E
 
 第三块是 Adaptive Levin。Generic 0PA flux 计算里，尤其是大的 $n$，source integral 会出现很强的振荡。普通求积方法在这种情况下会把大量采样点花在“追相位”上。以一维径向积分为例，普通采样型方法可能需要约 $2^{14}=16384$ 个径向采样点才能达到需要的收敛；Adaptive Levin 路径有效上大约到 $2048$ 这个量级就可以达到类似的收敛效果。
 
-Levin method 处理高频振荡积分的方式，不是盲目加密采样，而是把积分问题改写成一个辅助 ODE 系统；离散以后，这个系统就变成一个小矩阵求解问题。Adaptive 的部分就是围绕这个方法做区间细分：简单区域保持较粗，真正振荡困难的区域再切成更小的片段。每个小区间上使用很小的 local grid，二维设置里通常是 $17\times17$。局部 Levin 系统的 dense solve 大约按 $O(q^3)$ 缩放，这里 $q=17$；总成本随被接受的小区间数增长，而不是随一个全局膨胀的采样网格增长。对 generic 2D 积分，当前做法是在 radial 方向用 Adaptive Levin，在 $\theta$ 方向用 Clenshaw Curtis。
+Levin method 处理高频振荡积分的方式，不是盲目加密采样，而是把积分问题改写成一个辅助 ODE 系统；离散以后，这个系统就变成一个小矩阵求解问题。Adaptive 的部分就是对积分区间做二分细分：简单区域保持较粗，真正振荡困难的区域再切成更小的片段。每个小区间上，Levin 本身只需要一个很小的一维 collocation grid，通常取 $q=17$，而不是很细的采样网格。局部 dense solve 大约按每段 $O(q^3)$ 缩放，总成本随被接受的小区间数增长。对 generic 2D 积分，当前做法是在 radial 方向用 Adaptive Levin，在 $\theta$ 方向用 Clenshaw Curtis。
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin 流程</div>
