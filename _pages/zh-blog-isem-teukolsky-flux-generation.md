@@ -327,15 +327,15 @@ Adaptive Levin 的思路是不盲目采样振荡，而是把振荡相位放进�
 <div class="isem-metric">
   <div class="isem-metric__item">
     <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">generic 2D convolution integral 测试中 stratified 1000 row sample 的 post warm median</span>
+    <span class="isem-metric__label">generic 2D convolution integral evaluation 的典型 post warm 时间</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">focused 100 row generic high $n$ check 中报告的 p95</span>
+    <span class="isem-metric__label">high $n$ modes 中 95% 可以在这个时间以内完成</span>
   </div>
   <div class="isem-metric__item">
     <span class="isem-metric__value">&lt;5 ms</span>
-    <span class="isem-metric__label">有代表性的 warmed eccentric single mode 检查可以低于这个量级</span>
+    <span class="isem-metric__label">一致设置下的 1D interval 测试中，95% 可以低于这个量级</span>
   </div>
 </div>
 
