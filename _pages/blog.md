@@ -51,7 +51,7 @@ lang_switch_url: /zh/blog/
 
 <div class="blog-list">
   <article class="blog-card">
-    <h2><a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">A practical adiabatic (0PA) flux workflow for eccentric EMRIs</a></h2>
+    <h2><a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">A practical adiabatic (0PA) flux workflow for generic EMRIs</a></h2>
     <div class="blog-card__meta">June 21, 2026</div>
     <p>A technical note on radial Teukolsky solves, mode summation order, and Adaptive Levin integration for large scale 0PA flux generation.</p>
     <div class="blog-card__links">

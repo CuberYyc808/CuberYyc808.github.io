@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "A practical adiabatic (0PA) flux workflow for eccentric EMRIs"
+title: "A practical adiabatic (0PA) flux workflow for generic EMRIs"
 permalink: /blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: en
@@ -212,11 +212,11 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">Technical blog</div>
-<p class="isem-note"><strong>This note introduces a practical workflow for large scale 0PA flux generation: a reusable radial solver layer, a tail aware mode summation order, and Adaptive Levin integration for difficult eccentric modes.</strong></p>
+<p class="isem-note"><strong>This note introduces a practical workflow for large scale 0PA flux generation: a reusable radial solver layer, a tail aware mode summation order, and Adaptive Levin integration for difficult source integrals in generic EMRI calculations.</strong></p>
 
 In EMRI waveform work, a flux calculation is rarely a one time exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
-The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where eccentric source integrals become strongly oscillatory.
+The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where source integrals become strongly oscillatory.
 
 <div class="isem-links">
   <a href="{{ '/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN tool card</a>
@@ -313,11 +313,9 @@ The resulting workflow is therefore $\ell \to m \to k \to n$: angular structure 
 
 ## Adaptive Levin: use the right tool for the tail
 
-The third piece is Adaptive Levin integration. For eccentric modes, especially large $n$, the source integral can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one dimensional radial integrations, a standard sampling route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
+The third piece is Adaptive Levin integration. In generic 0PA flux calculations, source integrals with large $n$ can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one dimensional radial integrations, a standard sampling route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
 
-The name has two parts. "Adaptive" means the interval is split automatically: easy regions stay coarse, while difficult oscillatory regions are cut into smaller pieces. "Levin" refers to the Levin method for highly oscillatory integrals. Instead of evaluating the oscillation by dense sampling, the method rewrites the integral as an auxiliary ODE system. After discretization, the ODE system becomes a small matrix problem on each segment. Combining these two ideas lets the code choose where to refine while still using the Levin formulation locally.
-
-Adaptive Levin changes the problem. Instead of sampling the oscillation blindly, it builds the oscillatory phase into the integration strategy and splits the interval into smaller adaptive segments. On each local segment, the working grid is small, typically $17\times17$ in the two dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$ for the Levin system on a segment, and the total cost scales with the number of accepted segments rather than with one globally inflated sampling grid. For generic two dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw Curtis quadrature in the $\theta$ direction.
+The Levin method treats a highly oscillatory integral by rewriting it as an auxiliary ODE system; after discretization, that system becomes a small matrix solve. The adaptive part is the interval refinement around it: easy regions stay coarse, while difficult oscillatory regions are cut into smaller segments. On each local segment, the working grid is small, typically $17\times17$ in the two dimensional setup. The dense local solve scales like $O(q^3)$ with $q=17$, and the total cost follows the number of accepted segments rather than one globally inflated sampling grid. For generic two dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw Curtis quadrature in the $\theta$ direction.
 
 <div class="isem-diagram">
   <div class="isem-diagram__title">Adaptive Levin flow</div>
