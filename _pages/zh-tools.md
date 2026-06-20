@@ -1,10 +1,10 @@
 ---
 layout: archive
-title: "Tools"
-permalink: /tools/
+title: "工具"
+permalink: /zh/tools/
 author_profile: true
-lang: en
-lang_switch_url: /zh/tools/
+lang: zh
+lang_switch_url: /tools/
 ---
 
 <style>
@@ -79,61 +79,61 @@ lang_switch_url: /zh/tools/
 <div class="tools-grid">
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Teukolsky flux thumbnail">
+      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Teukolsky 能流缩略图">
       <div>
-        <h2>ISEM Teukolsky Flux Workflow</h2>
-        <div class="tool-card__tag">EMRI flux generation</div>
+        <h2>ISEM Teukolsky 能流流程</h2>
+        <div class="tool-card__tag">EMRI 能流生成</div>
       </div>
     </div>
-    <p>Technical infrastructure for repeated frequency-domain Teukolsky flux calculations, combining radial solves, shell-aware mode summation, and oscillatory source integration for high-eccentricity and generic EMRI orbits.</p>
+    <p>面向频域 Teukolsky 能流批量计算的技术基础设施，将径向方程求解、按壳层组织的多模求和，以及高振荡源项积分结合起来，用于高偏心率和一般 EMRI 轨道。</p>
     <div class="tool-card__links">
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Technical blog</a>
-      <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Related research</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">技术博客</a>
+      <a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">相关研究</a>
     </div>
   </article>
 
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="Waveform thumbnail">
+      <img class="tool-card__thumb" src="{{ '/images/waveform_bound.png' | relative_url }}" alt="波形缩略图">
       <div>
         <h2>GeneralizedSasakiNakamura.jl</h2>
-        <div class="tool-card__tag">Black-hole perturbation theory</div>
+        <div class="tool-card__tag">黑洞微扰理论</div>
       </div>
     </div>
-    <p>Julia tools for Kerr perturbation calculations, including homogeneous solutions and source-driven inhomogeneous workflows connected to frequency-domain waveform and flux production.</p>
+    <p>用于 Kerr 微扰计算的 Julia 工具，包含齐次解、源项驱动的非齐次流程，并与频域波形和能流生成直接相关。</p>
     <div class="tool-card__links">
       <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a>
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">ISEM note</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">ISEM 说明</a>
     </div>
   </article>
 
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/files/Trajectory_generic.gif' | relative_url }}" alt="Kerr trajectory thumbnail">
+      <img class="tool-card__thumb" src="{{ '/files/Trajectory_generic.gif' | relative_url }}" alt="Kerr 轨道缩略图">
       <div>
         <h2>KerrGeodesics.jl</h2>
-        <div class="tool-card__tag">Relativistic orbital dynamics</div>
+        <div class="tool-card__tag">相对论轨道动力学</div>
       </div>
     </div>
-    <p>Bound timelike Kerr geodesics parameterized by orbital elements, supplying orbital frequencies, phases, and trajectories for EMRI and b-EMRI waveform pipelines.</p>
+    <p>用轨道根数参数化束缚类时 Kerr 测地线，为 EMRI 与 b-EMRI 波形流程提供轨道频率、相位和轨迹。</p>
     <div class="tool-card__links">
       <a href="https://github.com/CuberYyc808/KerrGeodesics.jl">GitHub</a>
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Flux workflow</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">能流流程</a>
     </div>
   </article>
 
   <article class="tool-card">
     <div class="tool-card__head">
-      <img class="tool-card__thumb" src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="Oscillatory signal thumbnail">
+      <img class="tool-card__thumb" src="{{ '/images/Waveform_horizon.png' | relative_url }}" alt="振荡信号缩略图">
       <div>
         <h2>AdaptiveLevin.jl</h2>
-        <div class="tool-card__tag">Numerical algorithms</div>
+        <div class="tool-card__tag">数值算法</div>
       </div>
     </div>
-    <p>Adaptive Levin methods for one- and two-dimensional highly oscillatory integrals, useful when high-eccentricity source terms develop rapidly oscillating high-frequency structure.</p>
+    <p>用于一维和二维高振荡积分的自适应 Levin 方法，可处理高偏心率源项中快速振荡的高频结构。</p>
     <div class="tool-card__links">
       <a href="https://github.com/CuberYyc808/AdaptiveLevin.jl">GitHub</a>
-      <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Method context</a>
+      <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">方法背景</a>
     </div>
   </article>
 </div>

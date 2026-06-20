@@ -30,7 +30,7 @@ author:
   location         : "Copenhagen, Denmark"
   employer         : "Niels Bohr Institute"
   uri              : # URL
-  email            : "yucheng.yin@nbi.ku.dk" 
+  email            : "cuber.ycyin@gmail.com" 
 
   # Academic websites
   academia         : # URL
@@ -77,6 +77,12 @@ author:
   xing             : # Username
   youtube          : # Username
   zhihu            : # Username
+
+author_zh:
+  name             : "尹宇澄"
+  bio              : "访问学者"
+  location         : "丹麦哥本哈根"
+  employer         : "尼尔斯·玻尔研究所"
 
 # Publication Category - The following the list of publication categories and their headings
 publication_category:

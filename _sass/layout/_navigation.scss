@@ -225,12 +225,20 @@
       }
     }
 
+    #language-toggle,
     #theme-toggle {
       a {
         width: 25px;
         display: flex;
         justify-content: center;
         cursor: pointer;
+      }
+    }
+
+    #language-toggle {
+      a {
+        width: auto;
+        min-width: 3.25em;
       }
     }
 

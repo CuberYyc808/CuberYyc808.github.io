@@ -3,14 +3,21 @@ layout: archive
 title: "Research"
 permalink: /research/
 author_profile: true
+lang: en
+lang_switch_url: /zh/research/
 ---
 
 <style>
 .research-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1.15rem;
   margin: 1.25rem 0;
+}
+@media (min-width: 900px) {
+  .research-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .research-card {
   border: 1px solid #d8dee4;

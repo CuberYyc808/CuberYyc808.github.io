@@ -47,6 +47,46 @@ var toggleTheme = () => {
   setTheme(new_theme);
 };
 
+let determineLanguageSetting = () => {
+  const languageSetting = localStorage.getItem("language");
+  return (languageSetting === "zh" || languageSetting === "en") ? languageSetting : null;
+};
+
+let currentPageLanguage = () => {
+  return $("html").attr("lang") === "zh" ? "zh" : "en";
+};
+
+let languageTarget = () => {
+  const target = $("#language-toggle a").attr("href");
+  return target || null;
+};
+
+let applyLanguagePreference = () => {
+  const preferredLanguage = determineLanguageSetting();
+  if (!preferredLanguage || preferredLanguage === currentPageLanguage()) {
+    return;
+  }
+
+  const target = languageTarget();
+  if (target) {
+    window.location.href = target;
+  }
+};
+
+var toggleLanguage = (event) => {
+  if (event) {
+    event.preventDefault();
+  }
+
+  const newLanguage = currentPageLanguage() === "zh" ? "en" : "zh";
+  localStorage.setItem("language", newLanguage);
+
+  const target = languageTarget();
+  if (target) {
+    window.location.href = target;
+  }
+};
+
 /* ==========================================================================
    Plotly integration script so that Markdown codeblocks will be rendered
    ========================================================================== */
@@ -101,6 +141,10 @@ $(document).ready(function () {
 
   // Enable the theme toggle
   $('#theme-toggle').on('click', toggleTheme);
+
+  // Enable persistent language toggle
+  applyLanguagePreference();
+  $('#language-toggle').on('click', toggleLanguage);
 
   // Enable the sticky footer
   var bumpIt = function () {

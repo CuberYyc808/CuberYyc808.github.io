@@ -3,6 +3,8 @@ layout: archive
 title: "Near-Horizon Kerr Perturbations"
 permalink: /research/near-horizon-kerr-perturbations/
 author_profile: true
+lang: en
+lang_switch_url: /zh/research/near-horizon-kerr-perturbations/
 ---
 
 <div style="color:#57606a;font-size:0.9rem;margin-bottom:1rem;">

@@ -1,4 +1,21 @@
 {% include base_path %}
+{% assign is_zh = false %}
+{% if page.lang == "zh" %}
+  {% assign is_zh = true %}
+{% endif %}
+{% if is_zh %}
+  {% assign masthead_title = "尹宇澄的个人主页" %}
+  {% assign masthead_home = "/zh/" %}
+  {% assign nav_links = site.data.navigation.main_zh %}
+  {% assign language_label = "English" %}
+  {% assign language_url = page.lang_switch_url | default: "/" %}
+{% else %}
+  {% assign masthead_title = site.title %}
+  {% assign masthead_home = "/" %}
+  {% assign nav_links = site.data.navigation.main %}
+  {% assign language_label = "中文" %}
+  {% assign language_url = page.lang_switch_url | default: "/zh/" %}
+{% endif %}
 
 <div class="masthead">
   <div class="masthead__inner-wrap">
@@ -6,8 +23,8 @@
       <nav id="site-nav" class="greedy-nav">
         <button><div class="navicon"></div></button>
         <ul class="visible-links">
-          <li class="masthead__menu-item masthead__menu-item--lg persist"><a href="{{ base_path }}/">{{ site.title }}</a></li>
-          {% for link in site.data.navigation.main %}
+          <li class="masthead__menu-item masthead__menu-item--lg persist"><a href="{{ base_path }}{{ masthead_home }}">{{ masthead_title }}</a></li>
+          {% for link in nav_links %}
             {% if link.url contains 'http' %}
               {% assign domain = '' %}
             {% else %}
@@ -15,6 +32,9 @@
             {% endif %}
             <li class="masthead__menu-item"><a href="{{ domain }}{{ link.url }}">{{ link.title }}</a></li>
           {% endfor %}
+          <li id="language-toggle" class="masthead__menu-item masthead__language-switch persist">
+            <a role="button" href="{{ base_path }}{{ language_url }}" hreflang="{% if is_zh %}en{% else %}zh{% endif %}" aria-label="toggle language" title="toggle language">{{ language_label }}</a>
+          </li>
           <li id="theme-toggle" class="masthead__menu-item persist tail">
             <a role="button" aria-labelledby="theme-icon"><i id="theme-icon" class="fa-solid fa-sun" aria-hidden="true" title="toggle theme"></i></a>
           </li>

@@ -37,3 +37,16 @@ main:
     
   #- title: "Guide"
   #  url: /markdown/
+
+main_zh:
+  - title: "研究"
+    url: /zh/research/
+
+  - title: "工具"
+    url: /zh/tools/
+
+  - title: "论文"
+    url: /zh/publications/
+
+  - title: "简历"
+    url: /zh/cv/

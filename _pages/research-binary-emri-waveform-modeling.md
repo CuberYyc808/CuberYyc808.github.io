@@ -3,6 +3,8 @@ layout: archive
 title: "Binary EMRI Waveform Modeling"
 permalink: /research/binary-emri-waveform-modeling/
 author_profile: true
+lang: en
+lang_switch_url: /zh/research/binary-emri-waveform-modeling/
 ---
 
 <div style="color:#57606a;font-size:0.9rem;margin-bottom:1rem;">

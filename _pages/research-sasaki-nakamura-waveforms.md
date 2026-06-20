@@ -3,6 +3,8 @@ layout: archive
 title: "Sasaki-Nakamura Waveforms"
 permalink: /research/sasaki-nakamura-waveforms/
 author_profile: true
+lang: en
+lang_switch_url: /zh/research/sasaki-nakamura-waveforms/
 ---
 
 <div style="color:#57606a;font-size:0.9rem;margin-bottom:1rem;">
