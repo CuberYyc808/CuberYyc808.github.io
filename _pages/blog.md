@@ -47,7 +47,16 @@ lang_switch_url: /zh/blog/
   flex-wrap: wrap;
   gap: 0.85rem;
 }
+.blog-intro {
+  color: var(--global-text-color-light);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 760px;
+  margin: 0.2rem 0 1.2rem;
+}
 </style>
+
+<p class="blog-intro">This page collects technical notes and small ideas that come up during my research. Some of them are useful enough to share, but not necessarily complete enough to become standalone papers. I use this space to record the context, method, and implementation details in a more informal way.</p>
 
 <div class="blog-list">
   <article class="blog-card">

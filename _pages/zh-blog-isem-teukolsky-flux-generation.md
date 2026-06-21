@@ -216,7 +216,9 @@ window.MathJax = {
 
 做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不只是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
 
-这个 workflow 有三个部分。第一，径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。第二，mode sum 的组织方式要让径向谐波 $n$ 保持为最后的 tail direction，而不是被藏在一个 rectangular grid 里。第三，对强振荡的 source integral，使用 Adaptive Levin 积分。
+主要瓶颈集中在三个相关的地方。第一，每一个 mode 都要解 radial Teukolsky equation，所以径向求解很快会变成最耗时的重复操作。第二，mode sum 本身如果只是扩大 $(\ell,m,k,n)$ 空间里的 rectangular block，截断会很难控制：很多几乎不贡献 flux 的 mode 会被算进去，而一些仍然有贡献、但落在 block 外面的 mode 可能被漏掉，最后导致总 flux 被低估。第三，径向尾部收敛慢，意味着大的 $n$ mode 必须被处理，而这些 mode 会带来高振荡的 convolution integral。
+
+这个 workflow 就按这三个瓶颈展开。径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。Mode sum 重新组织，让重要的角向结构先进入计算，并把径向谐波 $n$ 保持为最后的 tail direction。尾部产生强振荡 source integral 的时候，再切换到 Adaptive Levin 积分。
 
 <div class="isem-links">
   <a href="{{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN 工具卡片</a>

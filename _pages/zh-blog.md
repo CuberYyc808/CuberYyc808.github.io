@@ -47,7 +47,16 @@ lang_switch_url: /blog/
   flex-wrap: wrap;
   gap: 0.85rem;
 }
+.blog-intro {
+  color: var(--global-text-color-light);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 760px;
+  margin: 0.2rem 0 1.2rem;
+}
 </style>
+
+<p class="blog-intro">这里主要放一些研究过程中冒出来的技术想法和实现记录。有些内容值得公开分享，但还不一定完整到可以单独写成论文。我会在这里用相对轻量的方式记录问题背景、方法思路和实现细节。</p>
 
 <div class="blog-list">
   <article class="blog-card">

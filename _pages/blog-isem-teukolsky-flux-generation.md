@@ -216,7 +216,9 @@ window.MathJax = {
 
 In EMRI waveform work, a flux calculation is rarely a one time exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
 
-The workflow has three parts. First, the radial equation is handled by an iterative series expansion matching method, ISEM for short. Second, the mode sum is organized so that the radial harmonic $n$ remains visible as the final tail direction rather than being hidden inside a rectangular grid. Third, Adaptive Levin integration is used where source integrals become strongly oscillatory.
+The main bottlenecks show up in three connected places. First, every mode needs a radial Teukolsky solve, so the radial solver quickly becomes the most expensive repeated operation. Second, the mode sum itself is hard to truncate if the calculation simply grows a rectangular block in $(\ell,m,k,n)$ space. Such a block may include many modes with negligible flux, while missing modes outside the block that still matter, which can underestimate the total flux. Third, the slow radial tail means that large $n$ modes must be evaluated, and those modes lead to highly oscillatory convolution integrals.
+
+The workflow follows these bottlenecks one by one. The radial equation is handled by an iterative series expansion matching method, ISEM for short. The mode sum is reorganized so that the important angular structure enters first and the radial harmonic $n$ remains visible as the final tail direction. When the tail produces strongly oscillatory source integrals, the calculation switches to Adaptive Levin integration.
 
 <div class="isem-links">
   <a href="{{ '/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN tool card</a>
