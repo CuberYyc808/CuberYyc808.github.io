@@ -13,7 +13,7 @@ I am now a visiting fellow of the [Strong Group](https://strong-gr.com) at Niels
 
 My research is mainly about black hole perturbation theory and its various applications, including waveform modeling of different gravitational wave events (e.g. BBH, EMRI, b-EMRI), quasi-normal modes of black holes, and scattering of gravitational wave by black holes.
 
-Email: cuber.ycyin@gmail.com
+Email: [yyin@caltech.edu](mailto:yyin@caltech.edu); [cuber.ycyin@gmail.com](mailto:cuber.ycyin@gmail.com)
 
 <style>
 .news-list {
@@ -52,6 +52,13 @@ Email: cuber.ycyin@gmail.com
 ## Recent News
 
 <div class="news-list">
+  <div class="news-item">
+    <div class="news-date">Jul 3, 2026</div>
+    <div>
+      <h3>Caltech email address updated.</h3>
+      <p>My Caltech email address is now <a href="mailto:yyin@caltech.edu">yyin@caltech.edu</a>. The Gmail address remains available as well.</p>
+    </div>
+  </div>
   <div class="news-item">
     <div class="news-date">Jun 21, 2026</div>
     <div>

@@ -10,7 +10,7 @@ lang_switch_url: /
 
 我主要做 black hole perturbation theory，以及它在 gravitational-wave modeling 里的应用。最近比较关心 EMRI / b-EMRI 波形、black-hole quasi-normal modes，以及黑洞对 gravitational waves 的散射。
 
-邮箱：cuber.ycyin@gmail.com
+邮箱：[yyin@caltech.edu](mailto:yyin@caltech.edu)；[cuber.ycyin@gmail.com](mailto:cuber.ycyin@gmail.com)
 
 <style>
 .news-list {
@@ -49,6 +49,13 @@ lang_switch_url: /
 ## Recent News
 
 <div class="news-list">
+  <div class="news-item">
+    <div class="news-date">2026 年 7 月 3 日</div>
+    <div>
+      <h3>Caltech 邮箱已更新。</h3>
+      <p>我的 Caltech 邮箱现在是 <a href="mailto:yyin@caltech.edu">yyin@caltech.edu</a>。原来的 Gmail 也继续保留。</p>
+    </div>
+  </div>
   <div class="news-item">
     <div class="news-date">2026 年 6 月 21 日</div>
     <div>
