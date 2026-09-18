@@ -6,11 +6,11 @@ lang: zh
 lang_switch_url: /
 ---
 
-我现在在 [Niels Bohr Institute](https://www.nbi.ku.dk/english/) 的 [Strong Group](https://strong-gr.com) 做 Visiting Fellow。此前我在[北京大学物理学院](https://www.phy.pku.edu.cn)读本科，2025 年 7 月毕业。
+我现在是[加州理工学院（California Institute of Technology）](https://www.caltech.edu/)的物理学博士生。入读 Caltech 之前，我曾在 Niels Bohr Institute 的 [Strong Group](https://strong-gr.com) 做访问学生。此前我在[北京大学物理学院](https://www.phy.pku.edu.cn)读本科，2025 年 7 月毕业。
 
 我主要做 black hole perturbation theory，以及它在 gravitational-wave modeling 里的应用。最近比较关心 EMRI / b-EMRI 波形、black-hole quasi-normal modes，以及黑洞对 gravitational waves 的散射。
 
-邮箱：[yyin@caltech.edu](mailto:yyin@caltech.edu)；[cuber.ycyin@gmail.com](mailto:cuber.ycyin@gmail.com)
+邮箱：[yyin@caltech.edu](mailto:yyin@caltech.edu)
 
 <style>
 .news-list {
@@ -50,10 +50,17 @@ lang_switch_url: /
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">2026 年 9 月 16 日</div>
+    <div>
+      <h3>在 Caltech 开始博士学习。</h3>
+      <p>我于 9 月 16 日抵达 Pasadena，开始在<a href="https://www.caltech.edu/">加州理工学院</a>攻读物理学博士。</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">2026 年 7 月 3 日</div>
     <div>
       <h3>Caltech 邮箱已更新。</h3>
-      <p>我的 Caltech 邮箱现在是 <a href="mailto:yyin@caltech.edu">yyin@caltech.edu</a>。原来的 Gmail 也继续保留。</p>
+      <p>我的 Caltech 邮箱现在是 <a href="mailto:yyin@caltech.edu">yyin@caltech.edu</a>。</p>
     </div>
   </div>
   <div class="news-item">

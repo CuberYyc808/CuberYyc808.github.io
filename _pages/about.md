@@ -9,11 +9,11 @@ redirect_from:
   - /about.html
 ---
 
-I am now a visiting fellow of the [Strong Group](https://strong-gr.com) at Niels Bohr Institute. I graduated from School of Physics at [Peking University](https://english.pku.edu.cn) and got my Bachelor's degree in July 2025.
+I'm now a PhD student in physics at [California Institute of Technology](https://www.caltech.edu/). Before entering Caltech, I was a visiting student in the [Strong Group](https://strong-gr.com) at the Niels Bohr Institute. I graduated from School of Physics at [Peking University](https://english.pku.edu.cn) and got my Bachelor's degree in July 2025.
 
 My research is mainly about black hole perturbation theory and its various applications, including waveform modeling of different gravitational wave events (e.g. BBH, EMRI, b-EMRI), quasi-normal modes of black holes, and scattering of gravitational wave by black holes.
 
-Email: [yyin@caltech.edu](mailto:yyin@caltech.edu); [cuber.ycyin@gmail.com](mailto:cuber.ycyin@gmail.com)
+Email: [yyin@caltech.edu](mailto:yyin@caltech.edu)
 
 <style>
 .news-list {
@@ -53,10 +53,17 @@ Email: [yyin@caltech.edu](mailto:yyin@caltech.edu); [cuber.ycyin@gmail.com](mail
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">Sep 16, 2026</div>
+    <div>
+      <h3>Starting my PhD at Caltech.</h3>
+      <p>I arrived in Pasadena on September 16 to begin my PhD in physics at <a href="https://www.caltech.edu/">California Institute of Technology</a>.</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">Jul 3, 2026</div>
     <div>
       <h3>Caltech email address updated.</h3>
-      <p>My Caltech email address is now <a href="mailto:yyin@caltech.edu">yyin@caltech.edu</a>. The Gmail address remains available as well.</p>
+      <p>My Caltech email address is now <a href="mailto:yyin@caltech.edu">yyin@caltech.edu</a>.</p>
     </div>
   </div>
   <div class="news-item">

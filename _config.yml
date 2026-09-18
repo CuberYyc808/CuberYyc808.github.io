@@ -26,9 +26,9 @@ author:
   avatar           : "profile2.png"
   name             : "Yucheng Yin"
   pronouns         : # example: "she/her"  
-  bio              : "Visiting Fellow"
-  location         : "Copenhagen, Denmark"
-  employer         : "Niels Bohr Institute"
+  bio              : "PhD student in physics"
+  location         : "Pasadena, CA, USA"
+  employer         : "California Institute of Technology"
   uri              : # URL
   email            : "yyin@caltech.edu"
 
@@ -80,9 +80,9 @@ author:
 
 author_zh:
   name             : "阴煜程"
-  bio              : "Visiting Fellow"
-  location         : "Copenhagen, Denmark"
-  employer         : "Niels Bohr Institute"
+  bio              : "物理学博士生"
+  location         : "Pasadena, CA, USA"
+  employer         : "加州理工学院"
 
 # Publication Category - The following the list of publication categories and their headings
 publication_category:

@@ -7,13 +7,13 @@
 {% assign seo_url = seo_url | default: site.github.url %}
 
 <!-- Optimize page title: Unify as "Name + Core Research Area" -->
-<title>Yucheng Yin | Visiting Student at the Niels Bohr Institute</title>
+<title>Yucheng Yin | PhD student at Caltech</title>
 
 <!-- Optimize description tag: Clarify research focus and identity -->
 <meta name="description" content="Yucheng's research is mainly about black hole perturbation theory, gravitational wave waveform modeling, and quasi-normal modes.">
 
 <!-- Add keywords tag: Supplement academic core terms -->
-<meta name="keywords" content="Yucheng Yin, CuberYyc808, Black Hole Physics, Gravitational Waves, Niels Bohr Institute, Black Hole Perturbation Theory, Quasi-normal Modes">
+<meta name="keywords" content="Yucheng Yin, CuberYyc808, Black Hole Physics, Gravitational Waves, Caltech, California Institute of Technology, Black Hole Perturbation Theory, Quasi-normal Modes">
 
 <!-- Canonical URL: Ensure unique page address -->
 {% if seo_url %}
@@ -23,7 +23,7 @@
 <!-- Open Graph (OG) tags: Unify identity for social sharing and search engine recognition -->
 <meta property="og:locale" content="en-US">
 <meta property="og:site_name" content="Yucheng Yin's Homepage">
-<meta property="og:title" content="Yucheng Yin | Visiting Student at the Niels Bohr Institute">
+<meta property="og:title" content="Yucheng Yin | PhD student at Caltech">
 <meta property="og:description" content="Yucheng's research is mainly about black hole perturbation theory, gravitational wave waveform modeling, and quasi-normal modes.">
 {% if seo_url %}
   <meta property="og:url" content="{{ page.url | prepend: seo_url | replace: "/index.html", "/" }}">
@@ -42,8 +42,8 @@
   "@type": "Person",
   "name": "Yucheng Yin",
   "url": {{ seo_url | jsonify }},
-  "jobTitle": "Visiting Student",
-  "affiliation": "Niels Bohr Institute",
+  "jobTitle": "PhD student in physics",
+  "affiliation": "California Institute of Technology",
   "researchArea": "Black Hole Perturbation Theory, Gravitational Waves, Quasi-normal Modes",
   "sameAs": ["https://github.com/CuberYyc808", "https://orcid.org/0009-0000-1715-731X"]
 }
