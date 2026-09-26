@@ -54,6 +54,15 @@ lang_switch_url: /tools/
   border-radius: 8px;
   background: var(--global-thead-color);
 }
+.tool-card__thumb--symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #276575;
+  font-family: Georgia, serif;
+  font-size: 1.6rem;
+  font-style: italic;
+}
 .tool-card h2 {
   font-size: 1.12rem;
   line-height: 1.2;
@@ -96,6 +105,21 @@ lang_switch_url: /tools/
     <div class="tool-card__links">
       <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a>
       <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}#径向求解层">径向求解说明</a>
+    </div>
+  </article>
+
+  <article class="tool-card" id="spin-weighted-spheroidal-harmonics">
+    <div class="tool-card__head">
+      <div class="tool-card__thumb tool-card__thumb--symbol" aria-hidden="true">S<sub>ℓm</sub></div>
+      <div>
+        <h2>SpinWeighted<wbr>Spheroidal<wbr>Harmonics.jl</h2>
+        <div class="tool-card__tag">角向本征问题</div>
+      </div>
+    </div>
+    <p>用于求解自旋加权扁球谐函数和角向本征值的 Julia 工具。v1.4.0 合并了我们在 Fast-eigenvalue 工作中开发的高效谱方法与复参数模式追踪，并新增 Rico 开发的 Leaver 连分数角向求解方法。</p>
+    <div class="tool-card__links">
+      <a href="https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl">GitHub</a>
+      <a href="https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl/releases/tag/v1.4.0">v1.4.0 发布说明</a>
     </div>
   </article>
 

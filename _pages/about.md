@@ -53,6 +53,13 @@ Email: [yyin@caltech.edu](mailto:yyin@caltech.edu)
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">Sep 26, 2026</div>
+    <div>
+      <h3>SpinWeightedSpheroidalHarmonics.jl v1.4.0 released.</h3>
+      <p><a href="https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl/releases/tag/v1.4.0">Version 1.4.0</a> integrates our Fast-eigenvalue work for more efficient angular solves and reliable complex-parameter mode tracking, and adds Rico's independent Leaver solver.</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">Sep 16, 2026</div>
     <div>
       <h3>Starting my PhD at Caltech.</h3>

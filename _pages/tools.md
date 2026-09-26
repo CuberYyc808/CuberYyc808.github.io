@@ -54,6 +54,15 @@ lang_switch_url: /zh/tools/
   border-radius: 8px;
   background: var(--global-thead-color);
 }
+.tool-card__thumb--symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #276575;
+  font-family: Georgia, serif;
+  font-size: 1.6rem;
+  font-style: italic;
+}
 .tool-card h2 {
   font-size: 1.12rem;
   line-height: 1.2;
@@ -96,6 +105,21 @@ lang_switch_url: /zh/tools/
     <div class="tool-card__links">
       <a href="https://github.com/ricokaloklo/GeneralizedSasakiNakamura.jl">GitHub</a>
       <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}#the-radial-solver-layer">Radial solver note</a>
+    </div>
+  </article>
+
+  <article class="tool-card" id="spin-weighted-spheroidal-harmonics">
+    <div class="tool-card__head">
+      <div class="tool-card__thumb tool-card__thumb--symbol" aria-hidden="true">S<sub>ℓm</sub></div>
+      <div>
+        <h2>SpinWeighted<wbr>Spheroidal<wbr>Harmonics.jl</h2>
+        <div class="tool-card__tag">Angular eigenproblems</div>
+      </div>
+    </div>
+    <p>Julia tools for spin-weighted spheroidal harmonics and angular eigenvalues. v1.4.0 brings faster spectral solves and more reliable mode tracking for complex parameters from our Fast-eigenvalue work, alongside Rico's independent Leaver method for the angular problem.</p>
+    <div class="tool-card__links">
+      <a href="https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl">GitHub</a>
+      <a href="https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl/releases/tag/v1.4.0">v1.4.0 release</a>
     </div>
   </article>
 

@@ -50,6 +50,13 @@ lang_switch_url: /
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">2026 年 9 月 26 日</div>
+    <div>
+      <h3>SpinWeightedSpheroidalHarmonics.jl v1.4.0 发布。</h3>
+      <p><a href="https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl/releases/tag/v1.4.0">v1.4.0</a> 合并了我们在 Fast-eigenvalue 工作中开发的高效角向谱求解与复参数模式追踪，也加入了 Rico 开发的独立 Leaver 求解方法。</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">2026 年 9 月 16 日</div>
     <div>
       <h3>在 Caltech 开始博士学习。</h3>
