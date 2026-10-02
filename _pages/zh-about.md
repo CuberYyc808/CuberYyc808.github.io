@@ -23,6 +23,9 @@ lang_switch_url: /
   padding: 0.9rem 0;
   border-top: 1px solid #d8dee4;
 }
+.news-list > .news-item:nth-child(n + 6) {
+  display: none;
+}
 .news-date {
   color: var(--global-text-color-light);
   font-size: 0.86rem;
@@ -49,6 +52,13 @@ lang_switch_url: /
 ## Recent News
 
 <div class="news-list">
+  <div class="news-item">
+    <div class="news-date">2026 年 10 月 2 日</div>
+    <div>
+      <h3>KerrGeodesics.jl v0.4.0 发布了。</h3>
+      <p><a href="https://github.com/CuberYyc808/KerrGeodesics.jl">新版</a>加入了捕获、散射和负能量轨道，并统一了轨迹与速度的计算接口。</p>
+    </div>
+  </div>
   <div class="news-item">
     <div class="news-date">2026 年 9 月 26 日</div>
     <div>

@@ -26,6 +26,9 @@ Email: [yyin@caltech.edu](mailto:yyin@caltech.edu)
   padding: 0.9rem 0;
   border-top: 1px solid #d8dee4;
 }
+.news-list > .news-item:nth-child(n + 6) {
+  display: none;
+}
 .news-date {
   color: var(--global-text-color-light);
   font-size: 0.86rem;
@@ -52,6 +55,13 @@ Email: [yyin@caltech.edu](mailto:yyin@caltech.edu)
 ## Recent News
 
 <div class="news-list">
+  <div class="news-item">
+    <div class="news-date">Oct 2, 2026</div>
+    <div>
+      <h3>KerrGeodesics.jl v0.4.0 is out.</h3>
+      <p><a href="https://github.com/CuberYyc808/KerrGeodesics.jl">The new version</a> adds capture, scattering and negative energy orbits, with a common interface for trajectories and velocities.</p>
+    </div>
+  </div>
   <div class="news-item">
     <div class="news-date">Sep 26, 2026</div>
     <div>
