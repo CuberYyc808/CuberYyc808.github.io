@@ -53,6 +53,13 @@ lang_switch_url: /
 
 <div class="news-list">
   <div class="news-item">
+    <div class="news-date">2026 年 10 月 8 日</div>
+    <div>
+      <h3>KerrGeodesics.jl v0.5.0 发布了。</h3>
+      <p><a href="https://github.com/CuberYyc808/KerrGeodesics.jl">新版</a>支持任意精度计算，并改进了线程安全性。</p>
+    </div>
+  </div>
+  <div class="news-item">
     <div class="news-date">2026 年 10 月 2 日</div>
     <div>
       <h3>KerrGeodesics.jl v0.4.0 发布了。</h3>
