@@ -212,148 +212,157 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">Technical blog</div>
-<p class="isem-note"><strong>This note introduces a practical workflow for large scale 0PA flux generation: a reusable radial solver layer, a tail aware mode summation order, and Adaptive Levin integration for difficult source integrals in generic EMRI calculations.</strong></p>
+<p class="isem-note"><strong>How GeneralizedSasakiNakamura.jl turns a Kerr geodesic into total Teukolsky fluxes, and where the speed comes from.</strong></p>
 
-In EMRI waveform work, a flux calculation is rarely a one time exercise. One quickly ends up with many parameter points, many modes, and orbits that may be eccentric, inclined, or close to difficult regions of Kerr parameter space. The useful question is therefore not only "can I compute this mode?" It is: can I compute many modes, see where the truncation really happens, reuse the expensive pieces, and avoid wasting samples on oscillations that the integrator should understand analytically?
-
-The main bottlenecks show up in three connected places. First, every mode needs a radial Teukolsky solve, so the radial solver quickly becomes the most expensive repeated operation. Second, the mode sum itself is hard to truncate if the calculation simply grows a rectangular block in $(\ell,m,k,n)$ space. Such a block may include many modes with negligible flux, while missing modes outside the block that still matter, which can underestimate the total flux. Third, the slow radial tail means that large $n$ modes must be evaluated, and those modes lead to highly oscillatory convolution integrals.
-
-The workflow follows these bottlenecks one by one. The radial equation is handled by an iterative series expansion matching method, ISEM for short. The mode sum is reorganized so that the important angular structure enters first and the radial harmonic $n$ remains visible as the final tail direction. When the tail produces strongly oscillatory source integrals, the calculation switches to Adaptive Levin integration.
-
-<div class="isem-links">
-  <a href="{{ '/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN tool card</a>
-  <a href="{{ '/tools/#kerr-geodesics' | relative_url }}">KerrGeodesics card</a>
-  <a href="{{ '/tools/#adaptive-levin' | relative_url }}">AdaptiveLevin card</a>
-  <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura waveform work</a>
-  <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GSN ISEM branch</a>
-</div>
+### Workflow in one line
 
 <div class="isem-diagram">
-  <div class="isem-diagram__title">Workflow in one line</div>
   <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Kerr orbit</strong><span>trajectory, velocity, phases</span></div>
-    <div class="isem-flow__box"><strong>Radial solver</strong><span>ISEM, Teukolsky and GSN homogeneous solutions</span></div>
-    <div class="isem-flow__box"><strong>Source integral</strong><span>trapezoidal or Adaptive Levin depending on the tail</span></div>
-    <div class="isem-flow__box"><strong>Mode shells</strong><span>$\ell$, $m$, $k$ grouped outside; $n$ monitored as radial tail</span></div>
-    <div class="isem-flow__box"><strong>Flux dataset</strong><span>infinity and horizon branches with recorded convergence metadata</span></div>
+    <div class="isem-flow__box"><strong>Orbit and sampling</strong><span>$(a, p, e, x)$ → sampled geodesic</span></div>
+    <div class="isem-flow__box"><strong>Per mode</strong><span>one GSN-ISEM radial solve + one spheroidal harmonic</span></div>
+    <div class="isem-flow__box"><strong>Source integral</strong><span>amplitude $Z$ → $\lvert Z\rvert^2$</span></div>
+    <div class="isem-flow__box"><strong>Mode sum</strong><span>$\ell \to m \to k \to n$</span></div>
+    <div class="isem-flow__box"><strong>Fluxes</strong><span>at infinity and the horizon</span></div>
   </div>
 </div>
 
-## Motivation: why this is worth doing
+All of this sits behind one call:
 
-LISA, Taiji, and TianQin are space based gravitational wave detector projects. One important class of sources for these missions is EMRIs, where 0PA flux generation becomes a production scale numerical task rather than a small script. Frequency domain Teukolsky calculations are accurate and modular, but the cost grows sharply when the orbit becomes highly eccentric, inclined, and precessing. In the fully generic case, the signal power is spread across a large set of $(\ell,m,k,n)$ modes. If the time for a single mode cannot be reduced effectively, the full flux calculation becomes a large computational expense.
+```julia
+using GeneralizedSasakiNakamura
+flux = Teukolsky_pointparticle_flux(a, p, e, x; tol = 1e-8)
+```
 
-The goal is not only to compute one mode quickly. The goal is to know which part of the spectrum is still active, which part has become tail, and which numerical method should be used for each region. That is where the current implementation differs from a plain rectangular mode loop: it treats the mode sum as something to diagnose, not just something to force through a larger grid.
+It returns the energy, angular momentum and Carter-constant fluxes, separately at infinity and at the horizon.
 
-## The radial solver layer
+### Motivation
 
-The first piece is the radial solver. Here the radial Teukolsky equation is handled by iterative series expansion matching, abbreviated as ISEM below. The idea is to use the transformed form of the Teukolsky equation, build series expansions from the horizon and from infinity, and then propagate the two physical branches toward an intermediate matching point. At that point, the solution and its radial derivative are matched to determine the matching coefficients, which are also the asymptotic amplitudes needed for flux evaluation. The full radial solution is then reconstructed from the matched branches.
+Space-based detectors such as LISA, Taiji and TianQin will observe extreme mass-ratio inspirals for months to years. Modelling them at adiabatic order needs the orbit-averaged fluxes on a dense grid in (a, p, e, x), and each flux is a sum over Teukolsky modes labelled by (ℓ, m, k, n). For a generic, eccentric and inclined orbit that sum easily runs to a million modes. Two numbers therefore decide whether a flux grid is practical: the cost of one mode, and how many modes you actually have to compute. The rest of this post goes through both.
 
-This is the right place to spend effort because the radial solve sits inside every mode calculation and has long been a bottleneck in the source integral calculation. In the current implementation, this construction is roughly two orders of magnitude faster than the traditional direct numerical GSN solve and MST based routes for the same repeated mode production use case. Reducing this cost for each mode is what makes the larger 0PA flux workflow practical.
+### Sampling the orbit
 
-<figure class="isem-figure">
-  <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Animated illustration of iterative series expansion matching for radial Teukolsky solutions">
-  <figcaption>ISEM as a radial construction idea: series solutions are generated from the horizon and infinity, propagated to an intermediate point, and matched through the value and radial derivative. The resulting asymptotic amplitudes feed directly into the flux calculation.</figcaption>
-</figure>
+The geodesic comes from KerrGeodesics.jl and is computed once per orbit. We sample it in Mino time, using the radial phase $q_r = \Upsilon_r \lambda + q_{r,0}$ and the polar phase $q_\theta = \Upsilon_\theta \lambda + q_{\theta,0}$. At each node we store $r$, $r_*$, $\theta$, the oscillating parts of $t$ and $\phi$, and the velocities $\Sigma u^r$ and $\Sigma u^\theta$.
 
-<div class="isem-steps">
-  <div class="isem-step">
-    <strong>Homogeneous solutions</strong>
-    <p>Build horizon side and infinity side homogeneous radial Teukolsky solutions from controlled series expansions.</p>
-  </div>
-  <div class="isem-step">
-    <strong>Matching coefficients</strong>
-    <p>Match the solution and derivative at an intermediate point to obtain the asymptotic amplitudes.</p>
-  </div>
-  <div class="isem-step">
-    <strong>Source interface</strong>
-    <p>Reuse the reconstructed radial solution and amplitudes in the source integral and flux evaluation.</p>
-  </div>
-</div>
+Two details keep this cheap.
 
-## How modes are added together
+- **Half periods.** Each phase only needs $[0, \pi]$. The return half of a libration is the same path with $u^r \to -u^r$ (or $u^\theta \to -u^\theta$), so it enters the integrand as a sign flip rather than as new samples.
+- **One dense master grid.** For each orbit we build a single uniform grid at the finest resolution we allow: $2^{14}+1$ radial and $2^{12}+1$ polar points. Every coarser grid is a strided view of it. The nodes are nested, so refining a mode never re-evaluates the trajectory, it just reads more of the master.
 
-Next comes the mode summation order. The useful empirical structure is that the largest contributions usually sit close to the diagonal in angular space: for a fixed $\ell$, modes with $m=\pm \ell$ are often among the dominant branches. A direct rectangular loop does not exploit this structure. If one fixes $\ell$ and then scans all $m$ from $-\ell$ to $\ell$, and then repeats this inside large $k$ and $n$ ranges, the calculation can spend many modes before the relevant convergence pattern becomes clear.
+### The radial solver
 
-A more useful order is to fix $m$ and grow $\ell$ from $\max(\mathrm{abs}(m),2)$ upward. This makes the angular convergence easier to see. The same idea can then be extended to the polar and radial harmonics. The $k$ direction often converges quickly, usually within about ten shells for the cases considered here, while the radial harmonic $n$ is slower and carries the long eccentricity tail. For that reason, $n$ is left as the final summation direction.
+Every mode has its own frequency $\omega = (m\Upsilon_\phi + n\Upsilon_r + k\Upsilon_\theta)/\Gamma$, so every mode needs a fresh homogeneous radial solution. This is where most codes spend their time, and where GSN-ISEM comes in.
 
-The older mental model is:
+GSN-ISEM solves the generalized Sasaki–Nakamura equation directly instead of the Teukolsky equation. It works in the compact coordinate $x = (r - r_+)/(r - r_-) \in (0, 1)$:
 
-<div class="isem-compare">
-  <div class="isem-compare__panel">
-    <h3>Rectangular grid mindset</h3>
-    <ul>
-      <li>Choose a large box in (&ell;, m, k, n).</li>
-      <li>Loop through the full block even when many entries are already negligible.</li>
-      <li>The slow radial tail is mixed into the whole four dimensional rectangle.</li>
-    </ul>
-  </div>
-  <div class="isem-compare__panel">
-    <h3>Production workflow mindset</h3>
-    <ul>
-      <li>For each m, grow &ell; from max(abs(m), 2) upward.</li>
-      <li>Add the faster k shells before the slow radial direction.</li>
-      <li>Leave n last, so the eccentric tail truncation is visible.</li>
-    </ul>
-  </div>
-</div>
+- **Seeds at the boundaries.** A Frobenius series at the horizon and an asymptotic series at infinity give the IN and UP solutions with the right boundary behaviour.
+- **Continuation.** Each seed is carried inward by Taylor patches about ordinary points. The recurrence coefficients are generated ahead of time as rational tables, so building a patch is a short, fixed recursion.
+- **Matching.** The two sides meet at an interior point. Matching the values and derivatives there gives the incidence and reflection amplitudes, which fix the normalisation of the mode.
 
-The practical advantage is that convergence becomes easier to diagnose. Instead of asking whether a whole rectangular block is large enough, the code can report where the infinity and horizon branches reached in $n$, how large the final shell contribution is, and whether $n_\mathrm{max}$ should be increased. In this ordering, the maximum radial truncation used in the code is $n_\mathrm{max}=500$, which is stable for the target cases with $e<0.9$. Compared with the rectangular ordering, this shell aware order typically reduces the number of modes that need to be evaluated by about 50%, while making the truncation decision more transparent.
+There is no adaptive ODE integration anywhere in this. A full solve is a fixed amount of polynomial arithmetic and takes about a millisecond. After that, evaluating the solution at any radius is just evaluating one of the patches. The same solver handles complex frequencies (it rotates the contour into the complex plane), which is what the `qnm` solver in the package is built on.
 
-<div class="isem-diagram">
-  <div class="isem-diagram__title">Mode summation flow</div>
-  <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Select &ell; shell</strong><span>angular resolution layer</span></div>
-    <div class="isem-flow__box"><strong>Select m branch</strong><span>azimuthal structure and frequency sign</span></div>
-    <div class="isem-flow__box"><strong>Select k shell</strong><span>polar harmonic structure for generic orbits</span></div>
-    <div class="isem-flow__box"><strong>Scan n tail</strong><span>radial harmonic tail; eccentric truncation is visible here</span></div>
-    <div class="isem-flow__box"><strong>Latch method</strong><span>switch tail modes to Adaptive Levin when oscillations dominate</span></div>
-  </div>
-</div>
+The demo below runs the solver in real time. Each frame is a new solve followed by evaluation of the solution:
 
-The resulting workflow is therefore $\ell \to m \to k \to n$: angular structure first, the fast polar direction next, and the slow radial tail last. This is not just a different loop order; it is a way to expose the convergence information that is otherwise hidden inside a large rectangular sum.
+<p align="center"><img src="{{ '/images/isem_realtime_demo_30s.gif' | relative_url }}" width="80%" alt="GSN-ISEM radial functions solved and evaluated afresh in every frame"></p>
 
-## Adaptive Levin: use the right tool for the tail
+*Caption: GSN-ISEM solving and evaluating the radial function on the fly.*
 
-The third piece is Adaptive Levin integration. In generic 0PA flux calculations, source integrals with large $n$ can oscillate rapidly. A plain quadrature rule then pays for many samples whose job is just to chase phase. In representative one dimensional radial integrations, a standard sampling route may need about $2^{14}=16384$ radial samples to reach the desired convergence, while the Adaptive Levin route can reach the same convergence with an effective scale closer to $2048$.
+### The polar part
 
-The Levin method treats a highly oscillatory integral by rewriting it as an auxiliary ODE system; after discretization, that system becomes a small matrix solve. The adaptive part is a bisection refinement of the integration interval: easy regions stay coarse, while difficult oscillatory regions are split into smaller segments. On each local segment, Levin itself only needs a small one dimensional collocation grid, typically $q=17$, rather than a very fine sampling mesh. The dense local solve scales roughly like $O(q^3)$ per segment, and the total cost follows the number of accepted segments. For generic two dimensional integrals, the current route uses Adaptive Levin in the radial direction and Clenshaw Curtis quadrature in the $\theta$ direction.
+The angular functions come from SpinWeightedSpheroidalHarmonics.jl, one harmonic object per mode. At each polar node we need $S$ and $S^\prime$; the second derivative $S^{\prime\prime}$ is taken from the spheroidal equation instead of being evaluated separately. Equatorial orbits only need the harmonic at $\theta = \pi/2$, which is one reason they are cheaper per mode.
 
-<div class="isem-diagram">
-  <div class="isem-diagram__title">Adaptive Levin flow</div>
-  <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Precompute orbit data</strong><span>reuse geodesic samples and phase information across batches</span></div>
-    <div class="isem-flow__box"><strong>Detect tail mode</strong><span>large radial harmonic or difficult generic $(n,k)$ row</span></div>
-    <div class="isem-flow__box"><strong>Refine radially</strong><span>the high-$n$ oscillation is mainly radial</span></div>
-    <div class="isem-flow__box"><strong>Use theta CC</strong><span>fixed polar Clenshaw Curtis nodes for generic 2D integrals</span></div>
-    <div class="isem-flow__box"><strong>Record metadata</strong><span>segments, depth, stop reason, and effective intervals</span></div>
-  </div>
-</div>
+### Putting the two together
 
-The effect is simple: the difficult high $n$ integrals no longer require the same brute force sampling strategy as the easy modes. Radial Adaptive Levin plus fixed $\theta$ direction Clenshaw Curtis keeps the high frequency radial direction under control, while still using a stable tensor product structure for generic orbits.
+For each mode the amplitude $Z$ is a source integral over the orbit, normalised by the incidence amplitude of the radial solution. The integrand combines the radial solution, the spheroidal harmonic, the orbit velocities and the phase $e^{i(\omega \Delta t - m \Delta \phi + \dots)}$.
+
+- **Circular equatorial orbits** need no integral at all.
+- **Circular inclined orbits** need the radial solution at one radius, $r = p$, and a 1-D integral over $q_\theta$.
+- **Eccentric equatorial orbits** need a 1-D integral over $q_r$, with the harmonic at a single angle.
+- **Generic orbits** need a 2-D integral over $(q_r, q_\theta)$.
+
+The 2-D integral does not factor into a radial piece times a polar piece, because $\rho = -1/(r - ia\cos\theta)$ couples $r$ and $\theta$. So the sum runs over all $N \times K$ nodes, but everything that can be precomputed is precomputed:
+
+- the $\rho$-dependent tables are built once per grid size and shared by every mode of the orbit;
+- radial-only factors are computed once per row and polar-only factors once per column;
+- the phase is an outer product of a radial vector and a polar vector.
+
+All integrals are trapezoid sums on the uniform phase grids. For periodic smooth integrands this converges very quickly, and it lets each mode refine adaptively on nested grids:
+
+1. Start at $N = 64$ radial intervals. The polar resolution starts at $K = 16$, raised to cover $\ell + \lvert k\rvert$.
+2. Double $N$. Only the new nodes are evaluated, and the old partial sum is reused as half of the new one.
+3. Stop when the relative change is below about $3\times 10^{-4}$ at the default tolerance, after a minimum grid that grows with $\lvert n\rvert$. $K$ only doubles when the result looks suspicious.
+
+On large grids, evaluating the radial solution at every new node becomes the cost. Once that happens the code builds a Chebyshev table of the solution (a few hundred points, checked against direct evaluations to $10^{-10}$) and interpolates from it.
+
+From $Z$ the fluxes follow directly. At infinity, $\dot E = \lvert Z\rvert^2/(4\pi\omega^2)$ and $\dot L = m\lvert Z\rvert^2/(4\pi\omega^3)$. At the horizon the same $\lvert Z\rvert^2$ gets the horizon factor. The Carter flux uses an extra polar average.
+
+### How the modes are added together
+
+A rectangular box in (ℓ, m, k, n) is the obvious choice and a wasteful one. Most of the box contributes nothing at the tolerance we care about. The summation instead walks outward from where the flux actually is.
+
+- **Symmetry first.** A mode and its $(\ell, -m, -n, -k)$ partner contribute equally, so only half of the index space is computed and each mode counts twice.
+- **Nesting.** For each radial shell $n$, we loop over $k$, then over $m$, and inside that walk in $\ell$.
+- **Start at the peak.** For $k \neq 0$ the $\ell$ walk starts near $\lvert m \pm k\rvert$, where the mode is largest, and goes up and down from there.
+- **Stop when it is small.** An $\ell$ walk stops after a few consecutive modes below the threshold, or immediately when one mode is far below it. An $m$ shell that is still growing does not count towards stopping. The $n$ tail stops after a few shells below `tol` times the running total; a fit of the shell sizes tells the code roughly where that will happen.
+- **Two branches.** Infinity and the horizon keep separate totals and separate thresholds, so the much smaller horizon flux is still resolved to relative accuracy.
+
+For the high-$n$ tails of very eccentric orbits the code also has an adaptive Levin rule for the radial integral, switched on with `tail_levin = true`. All the examples below use the trapezoid rule throughout.
+
+### What it costs
+
+All four cases use $a = 0.9$, $p = 6$ and `tol = 1e-8`, on a single thread with a warm session.
+
+| orbit | e | x | modes | time | per mode |
+|---|---|---|---:|---:|---:|
+| circular equatorial | 0 | 1 | 378 | 0.34 s | 0.89 ms |
+| circular inclined | 0 | 0.5 | 11 466 | 10.3 s | 0.90 ms |
+| eccentric equatorial | 0.7 | 1 | 45 204 | 26.1 s | 0.58 ms |
+| generic | 0.7 | 0.5 | 1 319 722 | 21.8 min | 0.99 ms |
+
+In every case the cost per mode stays close to the cost of one radial solve. The integration and summation add little on top of it. That comes from the nested grids, the shared per-orbit tables and the radial interpolation table. The eccentric case is the cheapest per mode because it only needs the harmonic at one angle and a 1-D integral.
 
 <div class="isem-metric">
   <div class="isem-metric__item">
-    <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">typical post warm time for generic case 2D convolution integral evaluation</span>
+    <span class="isem-metric__value">~1 ms</span>
+    <span class="isem-metric__label">one GSN-ISEM radial solve</span>
   </div>
   <div class="isem-metric__item">
-    <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">95% of high $n$ modes in generic case 2D convolution integrals finish within this time</span>
+    <span class="isem-metric__value">0.58 ms</span>
+    <span class="isem-metric__label">per mode, eccentric equatorial (e = 0.7)</span>
   </div>
   <div class="isem-metric__item">
-    <span class="isem-metric__value">5 ms</span>
-    <span class="isem-metric__label">95% of eccentric case 1D integral tests finish below this scale</span>
+    <span class="isem-metric__value">0.99 ms</span>
+    <span class="isem-metric__label">per mode, generic orbit (e = 0.7, x = 0.5)</span>
+  </div>
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">1.32 M modes in 21.8 min</span>
+    <span class="isem-metric__label">full generic flux, single thread</span>
   </div>
 </div>
 
-## Related software and modules
+### Running many orbits
 
-- [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM): current ISEM development branch.
-- [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl): bound Kerr geodesic infrastructure for orbital frequencies, phases, and trajectories.
-- [AdaptiveLevin.jl](https://github.com/CuberYyc808/AdaptiveLevin.jl): adaptive methods for highly oscillatory integrals.
-- [Tools overview]({{ '/tools/#generalized-sasaki-nakamura' | relative_url }}): homepage entry point for the software modules.
+Radial solves, mode calls and flux calls are thread-safe, and they give the same numbers in serial and threaded runs. A flux grid can therefore be spread over threads directly. Start Julia with `--threads=auto` and set `BLAS.set_num_threads(1)`.
 
-<div class="isem-callout">
-  <strong>Try it and send feedback.</strong> The code and related modules are open for testing and use.
+When several calls work on the same orbit, a submission lets them share the trajectory, the master grid and the precomputed tables:
+
+```julia
+modes = with_pointparticle_submission(0.9, 10.0, 0.2, 0.3) do submission
+    tasks = [spawn_pointparticle_submission!(submission) do
+                 Teukolsky_pointparticle_mode(-2, 2, 2, n, 0, 0.9, 10.0, 0.2, 0.3; submission)
+             end for n in 0:2]
+    fetch.(tasks)
+end
+```
+
+### Related software and modules
+
+<div class="isem-links isem-compare">
+  <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/claude/project-thread-s9q61h">GSN code</a>
+  <a href="{{ '/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN tool card</a>
+  <a href="{{ '/tools/#kerr-geodesics' | relative_url }}">KerrGeodesics card</a>
+  <a href="{{ '/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura waveform work</a>
 </div>
+
+- [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/claude/project-thread-s9q61h), the radial solver and the flux pipeline.
+- [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl), for the orbits.
+- SpinWeightedSpheroidalHarmonics.jl, for the angular functions.

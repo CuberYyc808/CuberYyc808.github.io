@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "面向 generic EMRI 的 adiabatic (0PA) 能流生成流程"
+title: "通用 EMRI 的绝热阶（0PA）通量计算流程"
 permalink: /zh/blog/isem-teukolsky-flux-generation/
 author_profile: true
 lang: zh
@@ -212,148 +212,157 @@ window.MathJax = {
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <div class="isem-kicker">技术博客</div>
-<p class="isem-note"><strong>这篇 note 介绍一个面向大规模频域 0PA flux generation 的实用 workflow：可复用的径向求解层、能看清尾部截断的 mode summation 顺序，以及用于 generic EMRI 计算中困难 source integral 的 Adaptive Levin 积分。</strong></p>
+<p class="isem-note"><strong>GeneralizedSasakiNakamura.jl 怎样把一条 Kerr 测地线变成 Teukolsky 总通量，以及速度从哪里来。</strong></p>
 
-做 EMRI waveform 的时候，flux 往往不是“算一次就结束”的东西。真正麻烦的是：参数点很多，mode 很多，轨道还可能高偏心、非赤道，甚至接近 Kerr 参数空间里比较难的区域。所以真正有用的问题不只是“这一个 mode 能不能算”，而是：能不能批量算很多 mode？能不能看清截断到底发生在哪里？能不能复用昂贵的数据？能不能不要把采样点浪费在追着相位振荡跑上？
-
-主要瓶颈集中在三个相关的地方。第一，每一个 mode 都要解 radial Teukolsky equation，所以径向求解很快会变成最耗时的重复操作。第二，mode sum 本身如果只是扩大 $(\ell,m,k,n)$ 空间里的 rectangular block，截断会很难控制：很多几乎不贡献 flux 的 mode 会被算进去，而一些仍然有贡献、但落在 block 外面的 mode 可能被漏掉，最后导致总 flux 被低估。第三，径向尾部收敛慢，意味着大的 $n$ mode 必须被处理，而这些 mode 会带来高振荡的 convolution integral。
-
-这个 workflow 就按这三个瓶颈展开。径向方程用 iterative series expansion matching 方法来处理，后面简称 ISEM。Mode sum 重新组织，让重要的角向结构先进入计算，并把径向谐波 $n$ 保持为最后的 tail direction。尾部产生强振荡 source integral 的时候，再切换到 Adaptive Levin 积分。
-
-<div class="isem-links">
-  <a href="{{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN 工具卡片</a>
-  <a href="{{ '/zh/tools/#kerr-geodesics' | relative_url }}">KerrGeodesics 卡片</a>
-  <a href="{{ '/zh/tools/#adaptive-levin' | relative_url }}">AdaptiveLevin 卡片</a>
-  <a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura 波形工作</a>
-  <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM">GSN ISEM branch</a>
-</div>
+### 一句话流程
 
 <div class="isem-diagram">
-  <div class="isem-diagram__title">一句话流程图</div>
   <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Kerr 轨道</strong><span>轨道、速度、相位</span></div>
-    <div class="isem-flow__box"><strong>径向求解</strong><span>ISEM、Teukolsky 和 GSN 齐次解</span></div>
-    <div class="isem-flow__box"><strong>源项积分</strong><span>普通积分或尾部 Adaptive Levin</span></div>
-    <div class="isem-flow__box"><strong>Mode shells</strong><span>外层按 $\ell$、$m$、$k$ 组织；$n$ 作为径向尾部监控</span></div>
-    <div class="isem-flow__box"><strong>Flux dataset</strong><span>无穷远与视界分支，并记录收敛信息</span></div>
+    <div class="isem-flow__box"><strong>轨道与采样</strong><span>$(a, p, e, x)$ → 测地线采样</span></div>
+    <div class="isem-flow__box"><strong>每个模式</strong><span>一次 GSN-ISEM 径向求解 + 一个球状谐函数</span></div>
+    <div class="isem-flow__box"><strong>源积分</strong><span>振幅 $Z$ → $\lvert Z\rvert^2$</span></div>
+    <div class="isem-flow__box"><strong>模式求和</strong><span>$\ell \to m \to k \to n$</span></div>
+    <div class="isem-flow__box"><strong>通量</strong><span>无穷远和视界处</span></div>
   </div>
 </div>
 
-## Motivation：为什么要这么做
+这些都包在一个函数里：
 
-LISA、太极、天琴是空间引力波探测项目。对这些任务来说，EMRI 是一类重要的源，而 EMRI 的 0PA flux generation 不是一个小脚本问题，而是一个生产规模的数值计算问题。频域 Teukolsky 计算的优点是精确、模块化；问题是当轨道偏心率变高，并且出现进动、倾斜和 generic Kerr 轨道结构时，能量会铺到大量 $(\ell,m,k,n)$ mode 上。如果单个 mode 的计算时间不能有效降下来，完整的 flux 计算就会变成很大的计算资源开销。
+```julia
+using GeneralizedSasakiNakamura
+flux = Teukolsky_pointparticle_flux(a, p, e, x; tol = 1e-8)
+```
 
-我们真正关心的不只是“某一个 mode 算得快不快”，而是：哪些区域还在贡献？哪些区域已经是 tail？哪个区域该换成更适合高振荡的积分器？这就是当前实现和普通矩形循环的区别：mode sum 不是一个盲目放大的循环，而是一个需要被诊断、被记录、被控制的对象。
+它返回能量、角动量和 Carter 常数三种通量，无穷远和视界分开给出。
 
-## 径向求解层
+### 动机
 
-第一块是径向求解。这里对 radial Teukolsky equation 使用 iterative series expansion matching，后面简称 ISEM。基本思路是先处理 Teukolsky 方程的变式，然后分别从 horizon 和 infinity 做级数展开，把两个物理解分支向中间的匹配点推进。在匹配点处，通过解和径向导数的 matching 求出 matching coefficients；这些系数也就是 flux evaluation 需要的渐近振幅。最后再由匹配后的两个分支重构出整个径向解。
+LISA、太极、天琴这类空间探测器会对极端质量比旋近（EMRI）连续观测数月到数年。要在绝热阶建模，需要在 (a, p, e, x) 的密集网格上算轨道平均通量，而每个通量都是对 (ℓ, m, k, n) 标记的 Teukolsky 模式求和。一条既偏心又倾斜的通用轨道，模式数很容易上百万。所以通量网格算不算得动，取决于两件事：一个模式要多少时间，以及实际需要算多少个模式。下面分别讲。
 
-这一层很重要，因为每一个 mode 都要碰到 radial solve，而径向方程求解一直是 source integral calculation 里的一个 bottleneck。在当前实现里，这个构造对重复 mode production 来说大约比传统直接数值求解 GSN 方程和 MST 路径快两个数量级左右。把单个 mode 的径向求解时间降下来，是整个 0PA flux workflow 能真正跑起来的关键。
+### 轨道采样
 
-<figure class="isem-figure">
-  <img src="{{ '/images/isem_matching_original_30fps.gif' | relative_url }}" alt="Iterative series expansion matching for radial Teukolsky solutions">
-  <figcaption>ISEM 的径向构造思想：从 horizon 和 infinity 分别生成级数解，推进到中间匹配点，并通过函数值和径向导数进行 matching。由此得到的渐近振幅会直接进入 flux calculation。</figcaption>
-</figure>
+测地线由 KerrGeodesics.jl 给出，每条轨道只算一次。采样用的是 Mino 时间下的径向相位 $q_r = \Upsilon_r \lambda + q_{r,0}$ 和极向相位 $q_\theta = \Upsilon_\theta \lambda + q_{\theta,0}$。每个节点上存 $r$、$r_*$、$\theta$、$t$ 和 $\phi$ 的振荡部分，以及速度 $\Sigma u^r$、$\Sigma u^\theta$。
 
-<div class="isem-steps">
-  <div class="isem-step">
-    <strong>齐次解</strong>
-    <p>从受控的级数展开构造 horizon side 和 infinity side homogeneous radial Teukolsky solutions。</p>
-  </div>
-  <div class="isem-step">
-    <strong>Matching coefficients</strong>
-    <p>在中间点匹配解和导数，得到 flux 计算需要的渐近振幅。</p>
-  </div>
-  <div class="isem-step">
-    <strong>Source interface</strong>
-    <p>把重构后的径向解和振幅复用于 source integral 与 flux evaluation。</p>
-  </div>
-</div>
+有两处设计让采样很便宜。
 
-## Mode 怎么加在一起
+- **只取半个周期。** 每个相位只需要 $[0, \pi]$。往返运动的另一半是同一条路径，只是 $u^r \to -u^r$（或 $u^\theta \to -u^\theta$），在被积函数里体现为符号翻转，不需要新的采样点。
+- **一张稠密的母网格。** 每条轨道只建一张均匀网格，取允许的最高分辨率：径向 $2^{14}+1$ 个点，极向 $2^{12}+1$ 个点。所有更粗的网格都是它的等间隔抽取。网格是嵌套的，所以某个模式加密时不用重新计算轨迹，只是多读一部分母网格。
 
-接下来是 mode summation 的顺序。一个很有用的经验结构是，贡献更大的 mode 往往在角向空间里接近对角线：对固定的 $\ell$ 来说，$m=\pm \ell$ 的分支通常是比较重要的贡献。直接做 rectangular loop 并没有利用这个结构。如果固定 $\ell$，再从 $-\ell$ 到 $\ell$ 扫完整个 $m$，然后再套进很大的 $k$ 和 $n$ 范围，程序会算很多 mode 之后才看得清真正的收敛结构。
+### 径向求解器
 
-更自然的顺序是固定 $m$，然后让 $\ell$ 从 $\max(\mathrm{abs}(m),2)$ 开始往上加。这样角向收敛更容易判断。同样的想法也可以推广到 $k$ 和 $n$。$k$ 方向通常收敛更快，在这里考虑的情形里一般十个 shell 左右就可以降到很小；而径向谐波 $n$ 收敛更慢，承载高偏心率带来的长尾。因此把 $n$ 放在最后，是为了把最慢的 radial tail 暴露出来。
+每个模式都有自己的频率 $\omega = (m\Upsilon_\phi + n\Upsilon_r + k\Upsilon_\theta)/\Gamma$，所以每个模式都要重新求一次齐次径向解。多数代码的时间都花在这里，GSN-ISEM 解决的正是这一步。
 
-以前很自然的想法是：
+GSN-ISEM 不解 Teukolsky 方程，而是直接解广义 Sasaki–Nakamura 方程，在紧致坐标 $x = (r - r_+)/(r - r_-) \in (0, 1)$ 上工作：
 
-<div class="isem-compare">
-  <div class="isem-compare__panel">
-    <h3>Rectangular grid 思路</h3>
-    <ul>
-      <li>先选一个很大的 (&ell;, m, k, n) box。</li>
-      <li>即使很多条目已经很小，也会在整个 block 里继续扫。</li>
-      <li>最慢的 radial tail 被混进四维矩形里，不容易判断截断。</li>
-    </ul>
-  </div>
-  <div class="isem-compare__panel">
-    <h3>Production workflow 思路</h3>
-    <ul>
-      <li>对每个 m，让 &ell; 从 max(abs(m), 2) 开始往上加。</li>
-      <li>先处理收敛更快的 k shell。</li>
-      <li>把 n 留在最后，让高偏心率截断直接可见。</li>
-    </ul>
-  </div>
-</div>
+- **边界处起步。** 视界处用 Frobenius 级数，无穷远处用渐近级数，分别给出边界行为正确的 IN 解和 UP 解。
+- **向内延拓。** 两边的解各自通过常点处的 Taylor 展开片段往里推。递推系数事先生成为有理系数表，所以构造一个片段只是一段固定长度的递推。
+- **匹配。** 两边在内部某一点相遇，在那里匹配函数值和导数，得到入射和反射振幅，也就确定了这个模式的归一化。
 
-这个顺序的实际好处是收敛更容易诊断。程序不再只是问“这个 rectangular block 够不够大”，而是可以直接报告无穷远分支和视界分支分别跑到了哪个 $n$，最后一个 shell 贡献多大，是否应该增大 $n_\mathrm{max}$。当前代码里最大的径向截断设置为 $n_\mathrm{max}=500$，对目标范围里 $e<0.9$ 的情形基本稳定。和 rectangular ordering 相比，这种按 shell 暴露尾部的顺序通常可以少算约 50% 的 mode，同时更方便判断 truncation。
+整个过程里没有自适应的 ODE 积分。一次完整求解是固定量的多项式运算，大约一毫秒。之后在任意半径上求值，就是对某个片段做一次多项式求值。同一个求解器也能处理复频率（把积分路径转到复平面上），程序包里的 `qnm` 就建立在这上面。
 
-<div class="isem-diagram">
-  <div class="isem-diagram__title">Mode summation 流程</div>
-  <div class="isem-flow">
-    <div class="isem-flow__box"><strong>选 &ell; shell</strong><span>角向分辨率层</span></div>
-    <div class="isem-flow__box"><strong>选 m branch</strong><span>方位角结构和频率符号</span></div>
-    <div class="isem-flow__box"><strong>选 k shell</strong><span>generic 轨道的极向谐波结构</span></div>
-    <div class="isem-flow__box"><strong>扫描 n tail</strong><span>径向谐波尾部；偏心率截断在这里最清楚</span></div>
-    <div class="isem-flow__box"><strong>切换方法</strong><span>尾部强振荡 mode 切到 Adaptive Levin</span></div>
-  </div>
-</div>
+下面的演示是求解器实时运行的样子，每一帧都是一次新的求解加上求值：
 
-最后得到的 workflow 是 $\ell \to m \to k \to n$：先角向结构，再处理较快的极向方向，最后处理最慢的径向尾部。这不只是换一个 loop order，而是把原来被四维矩形藏起来的收敛信息显式暴露出来。
+<p align="center"><img src="{{ '/images/isem_realtime_demo_30s.gif' | relative_url }}" width="80%" alt="每一帧重新求解并求值的 GSN-ISEM 径向函数"></p>
 
-## Adaptive Levin：尾部 mode 要用对积分器
+*图注：GSN-ISEM 现场求解并计算径向函数。*
 
-第三块是 Adaptive Levin。Generic 0PA flux 计算里，尤其是大的 $n$，source integral 会出现很强的振荡。普通求积方法在这种情况下会把大量采样点花在“追相位”上。以一维径向积分为例，普通采样型方法可能需要约 $2^{14}=16384$ 个径向采样点才能达到需要的收敛；Adaptive Levin 路径有效上大约到 $2048$ 这个量级就可以达到类似的收敛效果。
+### 极向部分
 
-Levin method 处理高频振荡积分的方式，不是盲目加密采样，而是把积分问题改写成一个辅助 ODE 系统；离散以后，这个系统就变成一个小矩阵求解问题。Adaptive 的部分就是对积分区间做二分细分：简单区域保持较粗，真正振荡困难的区域再切成更小的片段。每个小区间上，Levin 本身只需要一个很小的一维 collocation grid，通常取 $q=17$，而不是很细的采样网格。局部 dense solve 大约按每段 $O(q^3)$ 缩放，总成本随被接受的小区间数增长。对 generic 2D 积分，当前做法是在 radial 方向用 Adaptive Levin，在 $\theta$ 方向用 Clenshaw Curtis。
+角向函数来自 SpinWeightedSpheroidalHarmonics.jl，每个模式一个谐函数对象。每个极向节点上需要 $S$ 和 $S^\prime$，二阶导 $S^{\prime\prime}$ 直接由球状方程得到，不单独求值。赤道轨道只需要 $\theta = \pi/2$ 一处的谐函数值，这也是它每个模式更便宜的原因之一。
 
-<div class="isem-diagram">
-  <div class="isem-diagram__title">Adaptive Levin 流程</div>
-  <div class="isem-flow">
-    <div class="isem-flow__box"><strong>预计算轨道数据</strong><span>批量复用 geodesic sample 和相位信息</span></div>
-    <div class="isem-flow__box"><strong>识别 tail mode</strong><span>大的径向谐波或困难的 generic $(n,k)$ 行</span></div>
-    <div class="isem-flow__box"><strong>径向自适应</strong><span>高 $n$ 振荡主要在 radial 方向</span></div>
-    <div class="isem-flow__box"><strong>theta CC</strong><span>generic 2D 积分中使用固定 polar Clenshaw Curtis 节点</span></div>
-    <div class="isem-flow__box"><strong>记录元数据</strong><span>segments、depth、stop reason 和 effective intervals</span></div>
-  </div>
-</div>
+### 两部分怎么组合
 
-效果很直接：困难的高 $n$ 积分不再需要和简单 mode 使用同一套强行加密采样。Radial Adaptive Levin 加固定 $\theta$ 方向的 Clenshaw Curtis，可以控制高频径向振荡，同时在 generic orbit 的二维积分里保留稳定的张量积结构。
+每个模式的振幅 $Z$ 是沿轨道的源积分，再除以径向解的入射振幅做归一化。被积函数由径向解、球状谐函数、轨道速度和相位因子 $e^{i(\omega \Delta t - m \Delta \phi + \dots)}$ 组成。
+
+- **赤道圆轨道**不需要积分。
+- **倾斜圆轨道**只需要 $r = p$ 一处的径向解，加上对 $q_\theta$ 的一维积分。
+- **赤道偏心轨道**是对 $q_r$ 的一维积分，谐函数只取一个角度。
+- **通用轨道**是对 $(q_r, q_\theta)$ 的二维积分。
+
+二维积分不能拆成径向乘极向，因为 $\rho = -1/(r - ia\cos\theta)$ 把 $r$ 和 $\theta$ 耦合在一起。所以求和要遍历全部 $N \times K$ 个节点，但能预先算的都预先算好：
+
+- 和 $\rho$ 有关的表按网格尺寸只建一次，这条轨道的所有模式共用；
+- 只依赖 $r$ 的因子每行算一次，只依赖 $\theta$ 的因子每列算一次；
+- 相位因子是一个径向向量和一个极向向量的外积。
+
+所有积分都是均匀相位网格上的梯形求和。对光滑周期函数，梯形法收敛非常快，而且每个模式可以在嵌套网格上自适应加密：
+
+1. 径向从 $N = 64$ 个区间开始。极向从 $K = 16$ 开始，并提高到足以分辨 $\ell + \lvert k\rvert$。
+2. 把 $N$ 加倍。只在新节点上求值，旧的部分和直接作为新和的一半。
+3. 默认容差下，相对变化低于约 $3\times 10^{-4}$ 就停，但网格不能小于一个随 $\lvert n\rvert$ 增大的下限。只有结果看起来可疑时 $K$ 才加倍。
+
+网格很大时，在每个新节点上求径向解会成为主要开销。这时代码改为先建一张径向解的 Chebyshev 表（几百个点，用直接求值核对到 $10^{-10}$），再从表里插值。
+
+有了 $Z$，通量就直接得到。无穷远处 $\dot E = \lvert Z\rvert^2/(4\pi\omega^2)$，$\dot L = m\lvert Z\rvert^2/(4\pi\omega^3)$；视界处同一个 $\lvert Z\rvert^2$ 乘上视界因子。Carter 通量还要额外做一次极向平均。
+
+### 模式怎么加起来
+
+在 (ℓ, m, k, n) 上铺长方体网格是最直接的做法，也最浪费：在我们关心的容差下，盒子里大部分模式没有贡献。实际的求和从通量真正集中的地方往外走。
+
+- **先用对称性。** 一个模式和它的 $(\ell, -m, -n, -k)$ 伙伴贡献相同，所以只算一半的指标空间，每个模式计两次。
+- **嵌套顺序。** 对每个径向壳层 $n$，循环 $k$，再循环 $m$，最内层沿 $\ell$ 走。
+- **从峰值出发。** $k \neq 0$ 时，$\ell$ 从 $\lvert m \pm k\rvert$ 附近开始，那里模式最大，然后往上和往下走。
+- **小了就停。** $\ell$ 方向连续几个模式低于阈值就停；某个模式远低于阈值时立刻停。仍在增长的 $m$ 壳层不计入停止条件。$n$ 的尾巴在连续几个壳层都低于 `tol` 乘当前总和时停止，代码会拟合壳层大小，预估大致在哪里停。
+- **两个分支。** 无穷远和视界各自维护总和和阈值，所以小得多的视界通量也能达到同样的相对精度。
+
+对偏心率很高的轨道，代码在高 $n$ 尾部还提供径向的自适应 Levin 积分，用 `tail_levin = true` 打开。下面的例子全程用的是梯形法。
+
+### 耗时
+
+四个例子都取 $a = 0.9$、$p = 6$、`tol = 1e-8`，单线程，预热后计时。
+
+| 轨道 | e | x | 模式数 | 耗时 | 每个模式 |
+|---|---|---|---:|---:|---:|
+| 赤道圆轨道 | 0 | 1 | 378 | 0.34 s | 0.89 ms |
+| 倾斜圆轨道 | 0 | 0.5 | 11 466 | 10.3 s | 0.90 ms |
+| 赤道偏心 | 0.7 | 1 | 45 204 | 26.1 s | 0.58 ms |
+| 通用 | 0.7 | 0.5 | 1 319 722 | 21.8 min | 0.99 ms |
+
+所有情况下，每个模式的耗时都接近一次径向求解的耗时，积分和求和带来的额外开销很小。这来自嵌套网格、按轨道共享的预计算表和径向插值表。赤道偏心轨道每个模式最便宜，因为谐函数只取一个角度，积分也是一维的。
 
 <div class="isem-metric">
   <div class="isem-metric__item">
-    <span class="isem-metric__value">8.925 ms</span>
-    <span class="isem-metric__label">generic 情形下 2D convolution integral evaluation 的典型 post warm 时间</span>
+    <span class="isem-metric__value">~1 ms</span>
+    <span class="isem-metric__label">一次 GSN-ISEM 径向求解</span>
   </div>
   <div class="isem-metric__item">
-    <span class="isem-metric__value">16.531 ms</span>
-    <span class="isem-metric__label">generic 情形下 2D convolution integral 的 high $n$ modes 中，95% 可以在这个时间以内完成</span>
+    <span class="isem-metric__value">0.58 ms</span>
+    <span class="isem-metric__label">每个模式，赤道偏心轨道（e = 0.7）</span>
   </div>
   <div class="isem-metric__item">
-    <span class="isem-metric__value">5 ms</span>
-    <span class="isem-metric__label">eccentric 情形下的 1D integral 测试中，95% 可以低于这个量级</span>
+    <span class="isem-metric__value">0.99 ms</span>
+    <span class="isem-metric__label">每个模式，通用轨道（e = 0.7，x = 0.5）</span>
+  </div>
+  <div class="isem-metric__item">
+    <span class="isem-metric__value">1.32 M modes in 21.8 min</span>
+    <span class="isem-metric__label">通用轨道总通量，单线程</span>
   </div>
 </div>
 
-## 相关软件与模块
+### 多条轨道一起算
 
-- [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/ISEM)：当前 ISEM 开发分支。
-- [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl)：用于轨道频率、相位和轨迹的束缚 Kerr 测地线基础设施。
-- [AdaptiveLevin.jl](https://github.com/CuberYyc808/AdaptiveLevin.jl)：用于高振荡积分的自适应数值方法。
-- [工具总览]({{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }})：主页上的相关软件入口。
+径向求解、单模式和总通量的调用都是线程安全的，串行和多线程得到的数完全一样。因此通量网格可以直接分到多个线程上算。Julia 用 `--threads=auto` 启动，并设置 `BLAS.set_num_threads(1)`。
 
-<div class="isem-callout">
-  <strong>欢迎试用，也欢迎反馈。</strong> 相关代码和模块已经开放，欢迎测试和使用。
+如果几次调用针对同一条轨道，可以放进一个 submission，共享轨迹、母网格和预计算表：
+
+```julia
+modes = with_pointparticle_submission(0.9, 10.0, 0.2, 0.3) do submission
+    tasks = [spawn_pointparticle_submission!(submission) do
+                 Teukolsky_pointparticle_mode(-2, 2, 2, n, 0, 0.9, 10.0, 0.2, 0.3; submission)
+             end for n in 0:2]
+    fetch.(tasks)
+end
+```
+
+### 相关软件与模块
+
+<div class="isem-links isem-compare">
+  <a href="https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/claude/project-thread-s9q61h">GSN 代码</a>
+  <a href="{{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }}">GSN 工具卡片</a>
+  <a href="{{ '/zh/tools/#kerr-geodesics' | relative_url }}">KerrGeodesics 卡片</a>
+  <a href="{{ '/zh/research/sasaki-nakamura-waveforms/' | relative_url }}">Sasaki-Nakamura 波形工作</a>
 </div>
+
+- [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/claude/project-thread-s9q61h)，径向求解器和通量流程。
+- [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl)，测地线轨道。
+- SpinWeightedSpheroidalHarmonics.jl，角向函数。

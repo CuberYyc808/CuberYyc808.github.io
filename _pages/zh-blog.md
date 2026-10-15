@@ -60,9 +60,9 @@ lang_switch_url: /blog/
 
 <div class="blog-list">
   <article class="blog-card">
-    <h2><a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">面向 generic EMRI 的 adiabatic (0PA) 能流生成流程</a></h2>
+    <h2><a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">通用 EMRI 的绝热阶（0PA）通量计算流程</a></h2>
     <div class="blog-card__meta">2026 年 6 月 21 日</div>
-    <p>关于 radial Teukolsky solves、mode summation 顺序，以及 Adaptive Levin 积分在大规模 0PA flux generation 中用法的技术说明。</p>
+    <p>GeneralizedSasakiNakamura.jl 怎样把一条 Kerr 测地线变成 Teukolsky 总通量，以及速度从哪里来。</p>
     <div class="blog-card__links">
       <a href="{{ '/zh/blog/isem-teukolsky-flux-generation/' | relative_url }}">阅读博客</a>
       <a href="{{ '/zh/tools/#generalized-sasaki-nakamura' | relative_url }}">相关工具</a>

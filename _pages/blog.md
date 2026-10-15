@@ -62,7 +62,7 @@ lang_switch_url: /zh/blog/
   <article class="blog-card">
     <h2><a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">A practical adiabatic (0PA) flux workflow for generic EMRIs</a></h2>
     <div class="blog-card__meta">June 21, 2026</div>
-    <p>A technical note on radial Teukolsky solves, mode summation order, and Adaptive Levin integration for large scale 0PA flux generation.</p>
+    <p>How GeneralizedSasakiNakamura.jl turns a Kerr geodesic into total Teukolsky fluxes, and where the speed comes from.</p>
     <div class="blog-card__links">
       <a href="{{ '/blog/isem-teukolsky-flux-generation/' | relative_url }}">Read blog</a>
       <a href="{{ '/tools/#generalized-sasaki-nakamura' | relative_url }}">Related tools</a>
