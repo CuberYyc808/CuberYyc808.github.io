@@ -214,19 +214,7 @@ window.MathJax = {
 <div class="isem-kicker">技术博客</div>
 <p class="isem-note"><strong>GeneralizedSasakiNakamura.jl 怎样把一条 Kerr 测地线变成 Teukolsky 总通量，以及速度从哪里来。</strong></p>
 
-### 一句话流程
-
-<div class="isem-diagram">
-  <div class="isem-flow">
-    <div class="isem-flow__box"><strong>轨道与采样</strong><span>$(a, p, e, x)$ → 测地线采样</span></div>
-    <div class="isem-flow__box"><strong>每个模式</strong><span>一次 GSN-ISEM 径向求解 + 一个球状谐函数</span></div>
-    <div class="isem-flow__box"><strong>源积分</strong><span>振幅 $Z$ → $\lvert Z\rvert^2$</span></div>
-    <div class="isem-flow__box"><strong>模式求和</strong><span>$\ell \to m \to k \to n$</span></div>
-    <div class="isem-flow__box"><strong>通量</strong><span>无穷远和视界处</span></div>
-  </div>
-</div>
-
-这些都包在一个函数里：
+给定一条 Kerr 轨道，可以直接计算通量：
 
 ```julia
 using GeneralizedSasakiNakamura
@@ -260,15 +248,15 @@ GSN-ISEM 不解 Teukolsky 方程，而是直接解广义 Sasaki–Nakamura 方�
 
 整个过程里没有自适应的 ODE 积分。一次完整求解是固定量的多项式运算，大约一毫秒。之后在任意半径上求值，就是对某个片段做一次多项式求值。同一个求解器也能处理复频率（把积分路径转到复平面上），程序包里的 `qnm` 就建立在这上面。
 
-下面的演示是求解器实时运行的样子，每一帧都是一次新的求解加上求值：
+下面的动画展示边界级数如何逐段延拓、匹配，并构造出 GSN 径向函数：
 
-<p align="center"><img src="{{ '/images/isem_realtime_demo_30s.gif' | relative_url }}" width="80%" alt="每一帧重新求解并求值的 GSN-ISEM 径向函数"></p>
+<p align="center"><img src="{{ '/images/isem_matching_gsn_0_10_0.gif' | relative_url }}" width="80%" alt="GSN-ISEM 从视界和无穷远延拓级数，在内部匹配并重构径向函数 X"></p>
 
-*图注：GSN-ISEM 现场求解并计算径向函数。*
+*GSN-ISEM：从视界和无穷远延拓级数，在内部点匹配，并重构径向函数 $X$。*
 
 ### 极向部分
 
-角向函数来自 SpinWeightedSpheroidalHarmonics.jl，每个模式一个谐函数对象。每个极向节点上需要 $S$ 和 $S^\prime$，二阶导 $S^{\prime\prime}$ 直接由球状方程得到，不单独求值。赤道轨道只需要 $\theta = \pi/2$ 一处的谐函数值，这也是它每个模式更便宜的原因之一。
+角向函数来自 [SpinWeightedSpheroidalHarmonics.jl](https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl)，每个模式一个谐函数对象。每个极向节点上需要 $S$ 和 $S^\prime$，二阶导 $S^{\prime\prime}$ 直接由球状方程得到，不单独求值。赤道轨道只需要 $\theta = \pi/2$ 一处的谐函数值，这也是它每个模式更便宜的原因之一。
 
 ### 两部分怎么组合
 
@@ -365,4 +353,4 @@ end
 
 - [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/claude/project-thread-s9q61h)，径向求解器和通量流程。
 - [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl)，测地线轨道。
-- SpinWeightedSpheroidalHarmonics.jl，角向函数。
+- [SpinWeightedSpheroidalHarmonics.jl](https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl)，角向函数。

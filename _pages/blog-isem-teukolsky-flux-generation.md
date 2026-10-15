@@ -214,19 +214,7 @@ window.MathJax = {
 <div class="isem-kicker">Technical blog</div>
 <p class="isem-note"><strong>How GeneralizedSasakiNakamura.jl turns a Kerr geodesic into total Teukolsky fluxes, and where the speed comes from.</strong></p>
 
-### Workflow in one line
-
-<div class="isem-diagram">
-  <div class="isem-flow">
-    <div class="isem-flow__box"><strong>Orbit and sampling</strong><span>$(a, p, e, x)$ → sampled geodesic</span></div>
-    <div class="isem-flow__box"><strong>Per mode</strong><span>one GSN-ISEM radial solve + one spheroidal harmonic</span></div>
-    <div class="isem-flow__box"><strong>Source integral</strong><span>amplitude $Z$ → $\lvert Z\rvert^2$</span></div>
-    <div class="isem-flow__box"><strong>Mode sum</strong><span>$\ell \to m \to k \to n$</span></div>
-    <div class="isem-flow__box"><strong>Fluxes</strong><span>at infinity and the horizon</span></div>
-  </div>
-</div>
-
-All of this sits behind one call:
+For a Kerr orbit, compute the fluxes with:
 
 ```julia
 using GeneralizedSasakiNakamura
@@ -260,15 +248,15 @@ GSN-ISEM solves the generalized Sasaki–Nakamura equation directly instead of t
 
 There is no adaptive ODE integration anywhere in this. A full solve is a fixed amount of polynomial arithmetic and takes about a millisecond. After that, evaluating the solution at any radius is just evaluating one of the patches. The same solver handles complex frequencies (it rotates the contour into the complex plane), which is what the `qnm` solver in the package is built on.
 
-The demo below runs the solver in real time. Each frame is a new solve followed by evaluation of the solution:
+The animation below shows how the boundary series are continued and matched to construct the GSN radial function:
 
-<p align="center"><img src="{{ '/images/isem_realtime_demo_30s.gif' | relative_url }}" width="80%" alt="GSN-ISEM radial functions solved and evaluated afresh in every frame"></p>
+<p align="center"><img src="{{ '/images/isem_matching_gsn_0_10_0.gif' | relative_url }}" width="80%" alt="GSN-ISEM series continuation from the horizon and infinity, matching, and reconstruction of the radial function X"></p>
 
-*Caption: GSN-ISEM solving and evaluating the radial function on the fly.*
+*GSN-ISEM: continuation of the horizon and infinity series, matching at an interior point, and reconstruction of the radial function $X$.*
 
 ### The polar part
 
-The angular functions come from SpinWeightedSpheroidalHarmonics.jl, one harmonic object per mode. At each polar node we need $S$ and $S^\prime$; the second derivative $S^{\prime\prime}$ is taken from the spheroidal equation instead of being evaluated separately. Equatorial orbits only need the harmonic at $\theta = \pi/2$, which is one reason they are cheaper per mode.
+The angular functions come from [SpinWeightedSpheroidalHarmonics.jl](https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl), one harmonic object per mode. At each polar node we need $S$ and $S^\prime$; the second derivative $S^{\prime\prime}$ is taken from the spheroidal equation instead of being evaluated separately. Equatorial orbits only need the harmonic at $\theta = \pi/2$, which is one reason they are cheaper per mode.
 
 ### Putting the two together
 
@@ -365,4 +353,4 @@ end
 
 - [GeneralizedSasakiNakamura.jl](https://github.com/CuberYyc808/GeneralizedSasakiNakamura.jl/tree/claude/project-thread-s9q61h), the radial solver and the flux pipeline.
 - [KerrGeodesics.jl](https://github.com/CuberYyc808/KerrGeodesics.jl), for the orbits.
-- SpinWeightedSpheroidalHarmonics.jl, for the angular functions.
+- [SpinWeightedSpheroidalHarmonics.jl](https://github.com/ricokaloklo/SpinWeightedSpheroidalHarmonics.jl), for the angular functions.
